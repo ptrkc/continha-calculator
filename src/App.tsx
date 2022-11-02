@@ -180,7 +180,15 @@ function App() {
           ))}
         </ul>
         <Button onClick={addProduct}>Add product+</Button>
-        <p>Total:</p>
+        <p>
+          Total:{" "}
+          {formatCurrency(
+            [...products.values()].reduce(
+              (prev, curr) => prev + Number(curr.unitPrice) * curr.quantity,
+              0
+            )
+          )}
+        </p>
       </div>
     </div>
   );

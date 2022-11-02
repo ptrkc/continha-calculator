@@ -21,6 +21,7 @@ const CurrencyInput = ({
 
   return (
     <input
+      inputMode="numeric"
       className="border-black border-b-2 w-24"
       value={internalValue}
       onChange={(e) => onInternalChange(e.target.value)}
