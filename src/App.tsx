@@ -19,8 +19,8 @@ type Product = {
 
 const Person = ({
   person,
-  changeName,
-}: PropsWithChildren<{ person: Person; changeName: Function }>) => {
+  changePersonProp,
+}: PropsWithChildren<{ person: Person; changePersonProp: Function }>) => {
   return (
     <li className="flex gap-2 items-center">
       <span
@@ -29,8 +29,9 @@ const Person = ({
         {person.name.slice(0, 2)}
       </span>
       <input
+        className="border-black border-b-2"
         placeholder={person.name}
-        onChange={(evt) => changeName(person, evt.target.value)}
+        onChange={(evt) => changePersonProp(person, "name", evt.target.value)}
       />
     </li>
   );
@@ -38,23 +39,30 @@ const Person = ({
 
 const Product = ({
   product,
-  changeName,
-}: PropsWithChildren<{ product: Product; changeName: Function }>) => {
+  changeProductProp,
+}: PropsWithChildren<{ product: Product; changeProductProp: Function }>) => {
   const totalPrice = Number(product.unitPrice) * product.quantity;
   return (
-    <li className="flex gap-2 items-center justify-between">
+    <li className="flex flex-wrap gap-2 items-center justify-between">
       <span
         className={`rounded-full w-6 h-6 flex justify-center items-center text-white`}
       >
         {product.emoji}
       </span>
       <input
+        className="border-black border-b-2"
         placeholder={product.name}
-        onChange={(evt) => changeName(product, evt.target.value)}
+        onChange={(evt) => changeProductProp(product, "name", evt.target.value)}
       />
       <span>qt: {product.quantity}</span>
       <span>
-        unit: <CurrencyInput price={product.unitPrice} />
+        unit:{" "}
+        <CurrencyInput
+          value={product.unitPrice}
+          onChange={(value: string) =>
+            changeProductProp(product, "unitPrice", value.replace(/[^\d]/g, ""))
+          }
+        />
       </span>
       <span>total: {formatCurrency(totalPrice)}</span>
     </li>
@@ -128,15 +136,23 @@ function App() {
     );
   };
 
-  const changePersonName = (person: Person, newName: string) => {
+  const changePersonProp = (
+    person: Person,
+    propKey: string,
+    newValue: string
+  ) => {
     setPeople((prev) =>
-      new Map(prev).set(person.id, { ...person, name: newName })
+      new Map(prev).set(person.id, { ...person, [propKey]: newValue })
     );
   };
 
-  const changeProductName = (product: Product, newName: string) => {
+  const changeProductProp = (
+    product: Product,
+    propKey: string,
+    newValue: string
+  ) => {
     setProducts((prev) =>
-      new Map(prev).set(product.id, { ...product, name: newName })
+      new Map(prev).set(product.id, { ...product, [propKey]: newValue })
     );
   };
   return (
@@ -148,7 +164,7 @@ function App() {
             <Person
               person={person}
               key={person.id}
-              changeName={changePersonName}
+              changePersonProp={changePersonProp}
             />
           ))}
         </ul>
@@ -159,7 +175,7 @@ function App() {
             <Product
               product={product}
               key={product.id}
-              changeName={changeProductName}
+              changeProductProp={changeProductProp}
             />
           ))}
         </ul>
