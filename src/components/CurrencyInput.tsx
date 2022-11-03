@@ -1,5 +1,5 @@
 import { useState } from "react";
-import formatCurrency from "../utils/formatCurrency";
+import formatCurrency from "@utils/formatCurrency";
 
 const CurrencyInput = ({
   value,
