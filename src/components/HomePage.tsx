@@ -29,6 +29,7 @@ const Person = ({
         {person.name.slice(0, 2)}
       </span>
       <Input
+        className="w-full"
         value={person.name}
         onChange={(value: string) => changePersonProp(person, "name", value)}
         focus
@@ -43,41 +44,57 @@ const Product = ({
 }: PropsWithChildren<{ product: Product; changeProductProp: Function }>) => {
   const totalPrice = product.unitPrice * product.quantity;
   return (
-    <li className="flex flex-wrap gap-2 items-center justify-between">
-      <span
-        className={`rounded-full w-6 h-6 flex justify-center items-center text-white`}
-      >
-        {product.emoji}
-      </span>
-      <Input
-        value={product.name}
-        onChange={(value: string) => changeProductProp(product, "name", value)}
-      />
-      <span>
-        qt:
-        <Input
-          value={String(product.quantity)}
-          onChange={(value: string) =>
-            changeProductProp(product, "quantity", Number(value))
-          }
-        />
-      </span>
-      <span>
-        unit:{" "}
-        <Input
-          inputMode="numeric"
-          value={product.unitPrice}
-          onChange={(value: string) =>
-            changeProductProp(
-              product,
-              "unitPrice",
-              Number(value.replace(/[^\d]/g, ""))
-            )
-          }
-          maskFunction={formatCurrency}
-        />
-      </span>
-      <span>total: {formatCurrency(totalPrice)}</span>
+    <li className="flex gap-2 items-center justify-between">
+      <div className="flex flex-col w-full gap-2">
+        <div className="flex w-full">
+          <span className="rounded-full border-2 border-black w-6 h-6 flex justify-center items-center text-white mr-2">
+            {product.emoji}
+          </span>
+          <Input
+            className="w-full"
+            value={product.name}
+            onChange={(value: string) =>
+              changeProductProp(product, "name", value)
+            }
+          />
+        </div>
+        <div className="flex justify-between">
+          <span>
+            Preço un.:{" "}
+            <Input
+              className="w-20 px-2"
+              maxLength={11}
+              inputMode="numeric"
+              value={product.unitPrice}
+              onChange={(value: string) =>
+                changeProductProp(
+                  product,
+                  "unitPrice",
+                  Number(value.replace(/[^\d]/g, ""))
+                )
+              }
+              maskFunction={formatCurrency}
+            />
+          </span>
+          <span>
+            Qtd.:{" "}
+            <Input
+              className="w-16 px-2"
+              type="number"
+              step={1}
+              min={1}
+              value={String(product.quantity)}
+              onChange={(value: string) =>
+                changeProductProp(product, "quantity", Number(value))
+              }
+            />
+          </span>
+        </div>
+      </div>
+      <div className="whitespace-nowrap ">
+        <p>Total:</p>
+        <p>{formatCurrency(totalPrice)}</p>
+      </div>
     </li>
   );
 };
@@ -88,7 +105,7 @@ export const HomePage = () => {
       [
         "person-1",
         {
-          name: "Person",
+          name: "Pessoa",
           color: "bg-red-500",
           id: "person-1",
         },
@@ -102,7 +119,7 @@ export const HomePage = () => {
         "prod-1",
         {
           emoji: "🍺",
-          name: "Product",
+          name: "Produto",
           unitPrice: 469,
           quantity: 3,
           id: "prod-1",
@@ -110,6 +127,7 @@ export const HomePage = () => {
       ],
     ])
   );
+  const [tax, setTax] = useState(10);
 
   const addProduct = () => {
     const id = "prod-" + Math.random().toString(16).slice(2);
@@ -168,10 +186,19 @@ export const HomePage = () => {
       new Map(prev).set(product.id, { ...product, [propKey]: newValue })
     );
   };
+
+  const calculateTotalWithTax = (products: Product[], tax: number) => {
+    const total = [...products.values()].reduce(
+      (prev, curr) => prev + Number(curr.unitPrice) * curr.quantity,
+      0
+    );
+    return Math.ceil(total + (total * tax) / 100);
+  };
+
   return (
     <div>
-      <div className="flex flex-col mx-auto max-w-2xl border-2 border-black rounded-md p-2 m-2">
-        <p>People:</p>
+      <div className="flex gap-4 flex-col mx-auto max-w-2xl border-2 border-black rounded-md p-2 m-2">
+        <p>Pessoas:</p>
         <ul className="flex flex-col gap-1">
           {[...people.values()].map((person) => (
             <Person
@@ -181,9 +208,9 @@ export const HomePage = () => {
             />
           ))}
         </ul>
-        <Button onClick={addPerson}>Add person+</Button>
-        <p>Products:</p>
-        <ul className="flex flex-col gap-1">
+        <Button onClick={addPerson}>Adicionar pessoa+</Button>
+        <p>Produtos:</p>
+        <ul className="flex flex-col gap-8">
           {[...products.values()].map((product) => (
             <Product
               product={product}
@@ -192,16 +219,18 @@ export const HomePage = () => {
             />
           ))}
         </ul>
-        <Button onClick={addProduct}>Add product+</Button>
+        <Button onClick={addProduct}>Adicionar produto+</Button>
         <p>
-          Total:{" "}
-          {formatCurrency(
-            [...products.values()].reduce(
-              (prev, curr) => prev + Number(curr.unitPrice) * curr.quantity,
-              0
-            )
-          )}
+          Serviço:{" "}
+          <Input
+            className="w-10"
+            type="number"
+            value={tax}
+            onChange={(value: string) => setTax(Number(value))}
+          />
+          {"%"}
         </p>
+        <p>Total: {formatCurrency(calculateTotalWithTax(products, tax))}</p>
       </div>
     </div>
   );

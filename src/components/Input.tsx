@@ -13,6 +13,7 @@ export const Input = ({
   onChange,
   maskFunction,
   focus,
+  className,
   ...rest
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(
@@ -31,7 +32,7 @@ export const Input = ({
 
   return (
     <input
-      className="border-black border-b-2 w-24"
+      className={["border-black border-b-2 bg-white", className].join(" ")}
       value={internalValue}
       onChange={(e) => onChangeWithMask(e.target.value)}
       onFocus={focus ? handleFocus : undefined}
