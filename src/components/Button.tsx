@@ -1,6 +1,6 @@
 import { MouseEventHandler, PropsWithChildren } from "react";
 
-const Button = ({
+export const Button = ({
   children,
   onClick,
   ...rest
@@ -15,4 +15,3 @@ const Button = ({
     </button>
   );
 };
-export default Button;

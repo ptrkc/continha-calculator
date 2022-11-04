@@ -8,7 +8,7 @@ interface InputProps
   focus?: boolean;
 }
 
-const Input = ({
+export const Input = ({
   value,
   onChange,
   maskFunction,
@@ -39,4 +39,3 @@ const Input = ({
     />
   );
 };
-export default Input;

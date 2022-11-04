@@ -1,7 +1,7 @@
 import { PropsWithChildren, useState } from "react";
-import Button from "@components/Button";
-import Input from "@components/Input";
-import formatCurrency from "@utils/formatCurrency";
+import { Button } from "@components/Button";
+import { Input } from "@components/Input";
+import { formatCurrency } from "@utils/formatCurrency";
 
 type Person = {
   name: string;
@@ -82,7 +82,7 @@ const Product = ({
   );
 };
 
-function HomePage() {
+export const HomePage = () => {
   const [people, setPeople] = useState<Map<string, Person>>(
     new Map([
       [
@@ -205,6 +205,4 @@ function HomePage() {
       </div>
     </div>
   );
-}
-
-export default HomePage;
+};
