@@ -1,6 +1,6 @@
 import { PropsWithChildren, useState } from "react";
 import Button from "@components/Button";
-import CurrencyInput from "@components/CurrencyInput";
+import Input from "@components/Input";
 import formatCurrency from "@utils/formatCurrency";
 
 type Person = {
@@ -12,7 +12,7 @@ type Person = {
 type Product = {
   emoji: "🍺";
   name: string;
-  unitPrice: string;
+  unitPrice: number;
   quantity: number;
   id: string;
 };
@@ -28,10 +28,10 @@ const Person = ({
       >
         {person.name.slice(0, 2)}
       </span>
-      <input
-        className="border-black border-b-2"
-        placeholder={person.name}
-        onChange={(evt) => changePersonProp(person, "name", evt.target.value)}
+      <Input
+        value={person.name}
+        onChange={(value: string) => changePersonProp(person, "name", value)}
+        focus
       />
     </li>
   );
@@ -41,7 +41,7 @@ const Product = ({
   product,
   changeProductProp,
 }: PropsWithChildren<{ product: Product; changeProductProp: Function }>) => {
-  const totalPrice = Number(product.unitPrice) * product.quantity;
+  const totalPrice = product.unitPrice * product.quantity;
   return (
     <li className="flex flex-wrap gap-2 items-center justify-between">
       <span
@@ -49,28 +49,32 @@ const Product = ({
       >
         {product.emoji}
       </span>
-      <input
-        className="border-black border-b-2"
-        placeholder={product.name}
-        onChange={(evt) => changeProductProp(product, "name", evt.target.value)}
+      <Input
+        value={product.name}
+        onChange={(value: string) => changeProductProp(product, "name", value)}
       />
       <span>
         qt:
-        <input
-          className="border-black border-b-2 w-20"
-          placeholder={String(product.quantity)}
-          onChange={(evt) =>
-            changeProductProp(product, "quantity", evt.target.value)
+        <Input
+          value={String(product.quantity)}
+          onChange={(value: string) =>
+            changeProductProp(product, "quantity", Number(value))
           }
         />
       </span>
       <span>
         unit:{" "}
-        <CurrencyInput
+        <Input
+          inputMode="numeric"
           value={product.unitPrice}
           onChange={(value: string) =>
-            changeProductProp(product, "unitPrice", value.replace(/[^\d]/g, ""))
+            changeProductProp(
+              product,
+              "unitPrice",
+              Number(value.replace(/[^\d]/g, ""))
+            )
           }
+          maskFunction={formatCurrency}
         />
       </span>
       <span>total: {formatCurrency(totalPrice)}</span>
@@ -99,7 +103,7 @@ function HomePage() {
         {
           emoji: "🍺",
           name: "Product",
-          unitPrice: "469",
+          unitPrice: 469,
           quantity: 3,
           id: "prod-1",
         },
@@ -118,7 +122,7 @@ function HomePage() {
             {
               emoji: "🍺",
               name: "Product",
-              unitPrice: "000",
+              unitPrice: 0,
               quantity: 1,
               id,
             },
