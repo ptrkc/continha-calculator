@@ -10,7 +10,6 @@ type Person = {
 };
 
 type Product = {
-  emoji: "🍺";
   name: string;
   unitPrice: number;
   quantity: number;
@@ -46,18 +45,13 @@ const Product = ({
   return (
     <li className="flex gap-2 items-center justify-between">
       <div className="flex flex-col w-full gap-2">
-        <div className="flex w-full">
-          <span className="rounded-full border-2 border-black w-6 h-6 flex justify-center items-center text-white mr-2">
-            {product.emoji}
-          </span>
-          <Input
-            className="w-full"
-            value={product.name}
-            onChange={(value: string) =>
-              changeProductProp(product, "name", value)
-            }
-          />
-        </div>
+        <Input
+          className="w-full"
+          value={product.name}
+          onChange={(value: string) =>
+            changeProductProp(product, "name", value)
+          }
+        />
         <div className="flex justify-between">
           <span>
             Preço un.:{" "}
@@ -187,7 +181,10 @@ export const HomePage = () => {
     );
   };
 
-  const calculateTotalWithTax = (products: Product[], tax: number) => {
+  const calculateTotalWithTax = (
+    products: Map<string, Product>,
+    tax: number
+  ) => {
     const total = [...products.values()].reduce(
       (prev, curr) => prev + Number(curr.unitPrice) * curr.quantity,
       0
