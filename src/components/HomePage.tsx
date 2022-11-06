@@ -2,12 +2,7 @@ import { PropsWithChildren, useState } from "react";
 import { Button } from "@components/Button";
 import { Input } from "@components/Input";
 import { formatCurrency } from "@utils/formatCurrency";
-
-type Person = {
-  name: string;
-  color: string;
-  id: string;
-};
+import { usePeople, Person } from "@hooks/usePeople";
 
 type Product = {
   name: string;
@@ -16,10 +11,16 @@ type Product = {
   id: string;
 };
 
-const Person = ({
+const PersonInput = ({
   person,
   changePersonProp,
-}: PropsWithChildren<{ person: Person; changePersonProp: Function }>) => {
+  deletePerson,
+}: PropsWithChildren<{
+  person: Person;
+  changePersonProp: Function;
+  deletePerson: Function;
+}>) => {
+  console.log("person input started rendering");
   return (
     <li className="flex gap-2 items-center">
       <span
@@ -33,6 +34,7 @@ const Person = ({
         onChange={(value: string) => changePersonProp(person, "name", value)}
         focus
       />
+      <Button onClick={() => deletePerson(person.id)}>X</Button>
     </li>
   );
 };
@@ -73,7 +75,7 @@ const Product = ({
           <span>
             Qtd.:{" "}
             <Input
-              className="w-16 px-2"
+              className="w-16 px-2 text-right"
               type="number"
               step={1}
               min={1}
@@ -94,19 +96,7 @@ const Product = ({
 };
 
 export const HomePage = () => {
-  const [people, setPeople] = useState<Map<string, Person>>(
-    new Map([
-      [
-        "person-1",
-        {
-          name: "Pessoa",
-          color: "bg-red-500",
-          id: "person-1",
-        },
-      ],
-    ])
-  );
-
+  const { people, addPerson, changePersonProp, deletePerson } = usePeople();
   const [products, setProducts] = useState<Map<string, Product>>(
     new Map([
       [
@@ -132,42 +122,13 @@ export const HomePage = () => {
           [
             id,
             {
-              emoji: "🍺",
-              name: "Product",
+              name: "Produto",
               unitPrice: 0,
               quantity: 1,
               id,
             },
           ],
         ])
-    );
-  };
-
-  const addPerson = () => {
-    const id = "person-" + Math.random().toString(16).slice(2);
-    setPeople(
-      (prev) =>
-        new Map([
-          ...prev,
-          [
-            id,
-            {
-              name: "Person",
-              color: "bg-red-500",
-              id,
-            },
-          ],
-        ])
-    );
-  };
-
-  const changePersonProp = (
-    person: Person,
-    propKey: string,
-    newValue: string
-  ) => {
-    setPeople((prev) =>
-      new Map(prev).set(person.id, { ...person, [propKey]: newValue })
     );
   };
 
@@ -194,19 +155,25 @@ export const HomePage = () => {
 
   return (
     <div>
-      <div className="flex gap-4 flex-col mx-auto max-w-2xl border-2 border-black rounded-md p-2 m-2">
-        <p>Pessoas:</p>
-        <ul className="flex flex-col gap-1">
+      <div className="flex flex-col gap-4 mx-auto max-w-2xl p-2 bg-yellow-200">
+        <div className="flex justify-between">
+          <p>Pessoas:</p>
+          <Button onClick={addPerson}>Adicionar +</Button>
+        </div>
+        <ul className="flex flex-col gap-4">
           {[...people.values()].map((person) => (
-            <Person
+            <PersonInput
               person={person}
-              key={person.id}
               changePersonProp={changePersonProp}
+              deletePerson={deletePerson}
+              key={person.id}
             />
           ))}
         </ul>
-        <Button onClick={addPerson}>Adicionar pessoa+</Button>
-        <p>Produtos:</p>
+        <div className="flex justify-between">
+          <p>Produtos:</p>
+          <Button onClick={addProduct}>Adicionar +</Button>
+        </div>
         <ul className="flex flex-col gap-8">
           {[...products.values()].map((product) => (
             <Product
@@ -216,8 +183,7 @@ export const HomePage = () => {
             />
           ))}
         </ul>
-        <Button onClick={addProduct}>Adicionar produto+</Button>
-        <p>
+        <p className="text-right">
           Serviço:{" "}
           <Input
             className="w-10"
@@ -227,7 +193,9 @@ export const HomePage = () => {
           />
           {"%"}
         </p>
-        <p>Total: {formatCurrency(calculateTotalWithTax(products, tax))}</p>
+        <p className="text-right">
+          Total: {formatCurrency(calculateTotalWithTax(products, tax))}
+        </p>
       </div>
     </div>
   );

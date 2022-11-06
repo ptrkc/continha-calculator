@@ -1,15 +1,16 @@
-import { MouseEventHandler, PropsWithChildren } from "react";
-
 export const Button = ({
   children,
   onClick,
   ...rest
-}: PropsWithChildren<{ onClick: MouseEventHandler<HTMLButtonElement> }>) => {
+}: React.DetailedHTMLProps<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+>) => {
   return (
     <button
       onClick={onClick}
+      className="rounded-md border-2 border-black bg-white  px-4"
       {...rest}
-      className="rounded-md border-black border-2 px-4 mx-auto"
     >
       {children}
     </button>
