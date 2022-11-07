@@ -1,3 +1,4 @@
+import { cn } from "@utils/classnames";
 import { FocusEvent, useState } from "react";
 
 interface InputProps
@@ -32,7 +33,7 @@ export const Input = ({
 
   return (
     <input
-      className={["border-black border-b-2 bg-white", className].join(" ")}
+      className={cn("border-black border-b-2 bg-white px-2", className)}
       value={internalValue}
       onChange={(e) => onChangeWithMask(e.target.value)}
       onFocus={focus ? handleFocus : undefined}

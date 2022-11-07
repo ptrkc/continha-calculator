@@ -1,14 +1,33 @@
 import { PropsWithChildren, useState } from "react";
 import { Button } from "@components/Button";
 import { Input } from "@components/Input";
-import { formatCurrency } from "@utils/formatCurrency";
 import { usePeople, Person } from "@hooks/usePeople";
+import { formatCurrency } from "@utils/formatCurrency";
+import { cn } from "@utils/classnames";
 
 type Product = {
   name: string;
   unitPrice: number;
   quantity: number;
   id: string;
+};
+
+const PersonCircle = ({ person }: { person: Person }) => {
+  const splitName = person.name.split(/\s+/);
+  const abbreviation =
+    splitName.length > 1 && splitName[1]
+      ? `${splitName[0][0]}${splitName[1][0]}`
+      : person.name.slice(0, 2);
+  return (
+    <span
+      className={cn(
+        "shrink-0 rounded-full w-8 h-8 flex overflow-hidden justify-center items-center text-white",
+        person.color
+      )}
+    >
+      <span>{abbreviation.toUpperCase()}</span>
+    </span>
+  );
 };
 
 const PersonInput = ({
@@ -23,11 +42,8 @@ const PersonInput = ({
   console.log("person input started rendering");
   return (
     <li className="flex gap-2 items-center">
-      <span
-        className={`rounded-full w-6 h-6 flex justify-center items-center text-white ${person.color}`}
-      >
-        {person.name.slice(0, 2)}
-      </span>
+      <PersonCircle person={person} />
+
       <Input
         className="w-full"
         value={person.name}
@@ -58,7 +74,7 @@ const Product = ({
           <span>
             Preço un.:{" "}
             <Input
-              className="w-20 px-2"
+              className="w-20"
               maxLength={11}
               inputMode="numeric"
               value={product.unitPrice}
@@ -75,7 +91,7 @@ const Product = ({
           <span>
             Qtd.:{" "}
             <Input
-              className="w-16 px-2 text-right"
+              className="w-16 text-right"
               type="number"
               step={1}
               min={1}
@@ -161,14 +177,20 @@ export const HomePage = () => {
           <Button onClick={addPerson}>Adicionar +</Button>
         </div>
         <ul className="flex flex-col gap-4">
-          {[...people.values()].map((person) => (
-            <PersonInput
-              person={person}
-              changePersonProp={changePersonProp}
-              deletePerson={deletePerson}
-              key={person.id}
-            />
-          ))}
+          {people.size ? (
+            [...people.values()].map((person) => (
+              <PersonInput
+                person={person}
+                changePersonProp={changePersonProp}
+                deletePerson={deletePerson}
+                key={person.id}
+              />
+            ))
+          ) : (
+            <p className="text-center">
+              Adicione pessoas para dividir a continha 😉
+            </p>
+          )}
         </ul>
         <div className="flex justify-between">
           <p>Produtos:</p>
