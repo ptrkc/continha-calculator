@@ -4,13 +4,7 @@ import { Input } from "@components/Input";
 import { usePeople, Person } from "@hooks/usePeople";
 import { formatCurrency } from "@utils/formatCurrency";
 import { cn } from "@utils/classnames";
-
-type Product = {
-  name: string;
-  unitPrice: number;
-  quantity: number;
-  id: string;
-};
+import { useProducts, Product } from "@hooks/useProducts";
 
 const PersonCircle = ({ person }: { person: Person }) => {
   const splitName = person.name.split(/\s+/);
@@ -55,10 +49,15 @@ const PersonInput = ({
   );
 };
 
-const Product = ({
+const ProductInputs = ({
   product,
   changeProductProp,
-}: PropsWithChildren<{ product: Product; changeProductProp: Function }>) => {
+  deleteProduct,
+}: PropsWithChildren<{
+  product: Product;
+  changeProductProp: Function;
+  deleteProduct: Function;
+}>) => {
   const totalPrice = product.unitPrice * product.quantity;
   return (
     <li className="flex gap-2 items-center justify-between">
@@ -74,7 +73,7 @@ const Product = ({
           <span>
             Preço un.:{" "}
             <Input
-              className="w-20"
+              className="w-24 text-right"
               maxLength={11}
               inputMode="numeric"
               value={product.unitPrice}
@@ -104,6 +103,7 @@ const Product = ({
         </div>
       </div>
       <div className="whitespace-nowrap ">
+        <Button onClick={() => deleteProduct(product.id)}>X</Button>
         <p>Total:</p>
         <p>{formatCurrency(totalPrice)}</p>
       </div>
@@ -113,50 +113,10 @@ const Product = ({
 
 export const HomePage = () => {
   const { people, addPerson, changePersonProp, deletePerson } = usePeople();
-  const [products, setProducts] = useState<Map<string, Product>>(
-    new Map([
-      [
-        "prod-1",
-        {
-          emoji: "🍺",
-          name: "Produto",
-          unitPrice: 469,
-          quantity: 3,
-          id: "prod-1",
-        },
-      ],
-    ])
-  );
+  const { products, addProduct, changeProductProp, deleteProduct } =
+    useProducts();
+
   const [tax, setTax] = useState(10);
-
-  const addProduct = () => {
-    const id = "prod-" + Math.random().toString(16).slice(2);
-    setProducts(
-      (prev) =>
-        new Map([
-          ...prev,
-          [
-            id,
-            {
-              name: "Produto",
-              unitPrice: 0,
-              quantity: 1,
-              id,
-            },
-          ],
-        ])
-    );
-  };
-
-  const changeProductProp = (
-    product: Product,
-    propKey: string,
-    newValue: string
-  ) => {
-    setProducts((prev) =>
-      new Map(prev).set(product.id, { ...product, [propKey]: newValue })
-    );
-  };
 
   const calculateTotalWithTax = (
     products: Map<string, Product>,
@@ -180,10 +140,10 @@ export const HomePage = () => {
           {people.size ? (
             [...people.values()].map((person) => (
               <PersonInput
+                key={person.id}
                 person={person}
                 changePersonProp={changePersonProp}
                 deletePerson={deletePerson}
-                key={person.id}
               />
             ))
           ) : (
@@ -198,17 +158,18 @@ export const HomePage = () => {
         </div>
         <ul className="flex flex-col gap-8">
           {[...products.values()].map((product) => (
-            <Product
-              product={product}
+            <ProductInputs
               key={product.id}
+              product={product}
               changeProductProp={changeProductProp}
+              deleteProduct={deleteProduct}
             />
           ))}
         </ul>
         <p className="text-right">
           Serviço:{" "}
           <Input
-            className="w-10"
+            className="w-16 text-right"
             type="number"
             value={tax}
             onChange={(value: string) => setTax(Number(value))}
