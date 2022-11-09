@@ -7,18 +7,32 @@ import { formatCurrency } from "@utils/formatCurrency";
 import { cn } from "@utils/classnames";
 import { currencyInput } from "@utils/currencyInput";
 
-const PersonAvatar = ({ person }: { person: Person }) => {
+const PersonAvatar = ({
+  person,
+  variant = "solid",
+  size = "sm",
+}: {
+  person: Person;
+  variant?: "solid" | "outline";
+  size?: "sm" | "lg";
+}) => {
   const nameToUse = person.name.trim() || person.defaultName;
   const splitName = nameToUse.split(/\s+/);
   const abbreviation =
     splitName.length > 1 && splitName[1]
       ? `${splitName[0][0]}${splitName[1][0]}`
       : nameToUse.slice(0, 2);
+
+  const classes = {
+    solid: `bg-${person.color}-500 text-white`,
+    outline: `bg-white border-2 border-${person.color}-500 text-black`,
+  };
   return (
     <span
       className={cn(
-        "shrink-0 rounded-full w-8 h-8 flex overflow-hidden justify-center items-center text-white",
-        person.color
+        "shrink-0 rounded-full w-8 h-8 flex overflow-hidden justify-center items-center",
+        classes[variant],
+        size === "sm" ? "w-8 h-8" : "w-14 h-14"
       )}
     >
       <span>{abbreviation}</span>
@@ -38,7 +52,6 @@ const PersonInput = ({
   return (
     <li className="flex gap-2 items-center">
       <PersonAvatar person={person} />
-
       <Input
         className="w-full"
         value={person.name}
@@ -56,26 +69,28 @@ const PersonInput = ({
 
 const ProductInputs = ({
   product,
+  people,
   changeProductProp,
   deleteProduct,
 }: PropsWithChildren<{
   product: Product;
+  people: Map<string, Person>;
   changeProductProp: Function;
   deleteProduct: Function;
 }>) => {
   const totalPrice = product.unitPrice * product.quantity;
   return (
-    <li className="flex gap-2 items-center justify-between">
-      <div className="flex flex-col w-full gap-2">
-        <Input
-          className="w-full"
-          placeholder="Produto"
-          value={product.name}
-          onChange={(event) =>
-            changeProductProp(product, "name", event.target.value)
-          }
-        />
-        <div className="flex justify-between">
+    <li className="flex flex-col border rounded-md p-2 border-red-500">
+      <div className="flex gap-2 mb-4 items-center justify-between">
+        <div className="flex flex-col gap-2">
+          <Input
+            className="w-full"
+            placeholder="Produto"
+            value={product.name}
+            onChange={(event) =>
+              changeProductProp(product, "name", event.target.value)
+            }
+          />
           <span>
             Preço un.: R${" "}
             <Input
@@ -112,16 +127,26 @@ const ProductInputs = ({
             />
           </span>
         </div>
+        <div className="whitespace-nowrap">
+          <Button
+            className="bg-red-700"
+            onClick={() => deleteProduct(product.id)}
+          >
+            X
+          </Button>
+          <p>Total:</p>
+          <p>{formatCurrency(totalPrice)}</p>
+        </div>
       </div>
-      <div className="whitespace-nowrap ">
-        <Button
-          className="bg-red-700"
-          onClick={() => deleteProduct(product.id)}
-        >
-          X
-        </Button>
-        <p>Total:</p>
-        <p>{formatCurrency(totalPrice)}</p>
+      <div className="flex flex-wrap gap-2 justify-around">
+        {[...people.values()].map((person) => (
+          <PersonAvatar
+            person={person}
+            variant="outline"
+            size="lg"
+            key={person.id}
+          />
+        ))}
       </div>
     </li>
   );
@@ -168,11 +193,12 @@ export const HomePage = () => {
           )}
         </ul>
         <h2 className="text-xl font-bold">Produtos ({products.size}):</h2>
-        <ul className="flex flex-col gap-8">
+        <ul className="flex flex-col gap-4">
           {[...products.values()].map((product) => (
             <ProductInputs
               key={product.id}
               product={product}
+              people={people}
               changeProductProp={changeProductProp}
               deleteProduct={deleteProduct}
             />
