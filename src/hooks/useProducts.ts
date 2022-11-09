@@ -25,7 +25,7 @@ export const useProducts = () => {
   const addProduct = () => {
     const id = "prod-" + Math.random().toString(16).slice(2);
     setProducts(
-        new Map([...products,[id,{ name: "", unitPrice: 0, quantity: 1, id}]])
+      new Map([...products, [id, { name: "", unitPrice: 0, quantity: 1, id }]])
     );
   };
   const deleteProduct = (id: string) => {
@@ -39,9 +39,10 @@ export const useProducts = () => {
     propKey: string,
     newValue: string
   ) => {
-    setProducts(new Map(products).set(product.id, { ...product, [propKey]: newValue }));
+    setProducts(
+      new Map(products).set(product.id, { ...product, [propKey]: newValue })
+    );
   };
 
-
-  return {products, addProduct, changeProductProp, deleteProduct}
-}
+  return { products, addProduct, changeProductProp, deleteProduct };
+};
