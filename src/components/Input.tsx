@@ -13,7 +13,6 @@ export const Input = ({
   value = "",
   onChange,
   maskFunction,
-  focus = true,
   className,
   ...rest
 }: InputProps) => {
@@ -27,16 +26,11 @@ export const Input = ({
     return onChange(maskedValue);
   };
 
-  const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
-    event.target.select();
-  };
-
   return (
     <input
       className={cn("border-black border-b-2 bg-white px-2", className)}
       value={internalValue}
       onChange={(e) => onChangeWithMask(e.target.value)}
-      onFocus={focus ? handleFocus : undefined}
       {...rest}
     />
   );

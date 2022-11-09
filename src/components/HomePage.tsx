@@ -2,16 +2,17 @@ import { PropsWithChildren, useState } from "react";
 import { Button } from "@components/Button";
 import { Input } from "@components/Input";
 import { usePeople, Person } from "@hooks/usePeople";
+import { useProducts, Product } from "@hooks/useProducts";
 import { formatCurrency } from "@utils/formatCurrency";
 import { cn } from "@utils/classnames";
-import { useProducts, Product } from "@hooks/useProducts";
 
-const PersonCircle = ({ person }: { person: Person }) => {
-  const splitName = person.name.split(/\s+/);
+const PersonAvatar = ({ person }: { person: Person }) => {
+  const nameToUse = person.name.trim() || person.defaultName;
+  const splitName = nameToUse.split(/\s+/);
   const abbreviation =
     splitName.length > 1 && splitName[1]
       ? `${splitName[0][0]}${splitName[1][0]}`
-      : person.name.slice(0, 2);
+      : nameToUse.slice(0, 2);
   return (
     <span
       className={cn(
@@ -35,13 +36,13 @@ const PersonInput = ({
 }>) => {
   return (
     <li className="flex gap-2 items-center">
-      <PersonCircle person={person} />
+      <PersonAvatar person={person} />
 
       <Input
         className="w-full"
         value={person.name}
+        placeholder={person.defaultName}
         onChange={(value: string) => changePersonProp(person, "name", value)}
-        focus
       />
       <Button className="bg-red-700" onClick={() => deletePerson(person.id)}>
         X

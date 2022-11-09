@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 export type Person = {
+  defaultName: string;
   name: string;
   color: string;
   id: string;
@@ -26,7 +27,8 @@ export const usePeople = () => {
       [
         "person-1",
         {
-          name: "Pessoa 1",
+          defaultName: "Pessoa 1",
+          name: "",
           color: COLORS[0],
           id: "person-1",
         },
@@ -35,7 +37,7 @@ export const usePeople = () => {
   );
 
   const addPerson = () => {
-    const newCounter = counter + 1;
+    const nextPersonNumber = counter + 1;
     const id = "person-" + Math.random().toString(16).slice(2);
     setPeople(
       new Map([
@@ -43,14 +45,18 @@ export const usePeople = () => {
         [
           id,
           {
-            name: newCounter > 9 ? `${newCounter}` : `Pessoa ${newCounter}`,
+            defaultName:
+              nextPersonNumber > 9
+                ? `${nextPersonNumber}`
+                : `Pessoa ${nextPersonNumber}`,
+            name: "",
             color: COLORS[counter % COLORS.length],
             id,
           },
         ],
       ])
     );
-    setCounter(newCounter);
+    setCounter(nextPersonNumber);
   };
   const deletePerson = (id: string) => {
     const newPeople = new Map([...people]);
