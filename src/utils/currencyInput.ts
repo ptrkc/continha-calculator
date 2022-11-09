@@ -3,8 +3,6 @@ const format = (initalValue: string | number) => {
   if (value === "0" || value === "") return "";
   if (value === String(parseInt(value))) return value;
 
-  console.log(value);
-
   const [int, dec] = value
     .replace(".", ",")
     .replace(/[^\d,]/g, "")
@@ -13,7 +11,7 @@ const format = (initalValue: string | number) => {
 };
 
 const toCents = (value: string) => {
-  if (!value) return 0;
+  if (value === "") return 0;
 
   if (value === String(parseInt(value))) return Number(`${value}00`);
 

@@ -1,36 +1,38 @@
 import { cn } from "@utils/classnames";
-import { FocusEvent, useState } from "react";
+import { useState } from "react";
 
-interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   value: string | number;
-  maskFunction?: Function;
-  onChange: Function;
-  focus?: boolean;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  format?: Function;
 }
 
 export const Input = ({
-  value = "",
+  value,
   onChange,
-  maskFunction,
+  format,
   className,
   ...rest
 }: InputProps) => {
   const [internalValue, setInternalValue] = useState(
-    maskFunction ? maskFunction(value) : value
+    format ? format(value) : value
   );
+  const inputValue = format ? internalValue : value;
 
-  const onChangeWithMask = (value: string) => {
-    const maskedValue = maskFunction ? maskFunction(value) : value;
-    setInternalValue(maskedValue);
-    return onChange(maskedValue);
+  const onChangeWithFormat = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (format) {
+      event.target.value = format(event.target.value);
+      setInternalValue(event.target.value);
+      return onChange(event);
+    }
+    onChange(event);
   };
 
   return (
     <input
       className={cn("border-black border-b-2 bg-white px-2", className)}
-      value={internalValue}
-      onChange={(e) => onChangeWithMask(e.target.value)}
+      value={inputValue}
+      onChange={onChangeWithFormat}
       {...rest}
     />
   );

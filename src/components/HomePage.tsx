@@ -21,7 +21,7 @@ const PersonAvatar = ({ person }: { person: Person }) => {
         person.color
       )}
     >
-      <span>{abbreviation.toUpperCase()}</span>
+      <span>{abbreviation}</span>
     </span>
   );
 };
@@ -40,10 +40,12 @@ const PersonInput = ({
       <PersonAvatar person={person} />
 
       <Input
-        className="w-full capitalize"
+        className="w-full"
         value={person.name}
         placeholder={person.defaultName}
-        onChange={(value: string) => changePersonProp(person, "name", value)}
+        onChange={(event) =>
+          changePersonProp(person, "name", event.target.value.toUpperCase())
+        }
       />
       <Button className="bg-red-700" onClick={() => deletePerson(person.id)}>
         X
@@ -69,8 +71,8 @@ const ProductInputs = ({
           className="w-full"
           placeholder="Produto"
           value={product.name}
-          onChange={(value: string) =>
-            changeProductProp(product, "name", value)
+          onChange={(event) =>
+            changeProductProp(product, "name", event.target.value)
           }
         />
         <div className="flex justify-between">
@@ -82,14 +84,14 @@ const ProductInputs = ({
               inputMode="numeric"
               placeholder="0,00"
               value={product.unitPrice}
-              onChange={(value: string) =>
+              onChange={(event) =>
                 changeProductProp(
                   product,
                   "unitPrice",
-                  currencyInput.toCents(value)
+                  currencyInput.toCents(event.target.value)
                 )
               }
-              maskFunction={currencyInput.format}
+              format={currencyInput.format}
             />
           </span>
           <span>
@@ -100,8 +102,12 @@ const ProductInputs = ({
               step={1}
               min={1}
               value={String(product.quantity)}
-              onChange={(value: string) =>
-                changeProductProp(product, "quantity", Number(value))
+              onChange={(event) =>
+                changeProductProp(
+                  product,
+                  "quantity",
+                  Number(event.target.value)
+                )
               }
             />
           </span>
@@ -181,7 +187,7 @@ export const HomePage = () => {
             className="w-16 text-right"
             type="number"
             value={tax}
-            onChange={(value: string) => setTax(Number(value))}
+            onChange={(event) => setTax(Number(event.target.value))}
           />
           {"%"}
         </p>

@@ -27,7 +27,7 @@ export const usePeople = () => {
       [
         "person-1",
         {
-          defaultName: "Pessoa 1",
+          defaultName: "PESSOA 1",
           name: "",
           color: COLORS[0],
           id: "person-1",
@@ -48,7 +48,7 @@ export const usePeople = () => {
             defaultName:
               nextPersonNumber > 9
                 ? `${nextPersonNumber}`
-                : `Pessoa ${nextPersonNumber}`,
+                : `PESSOA ${nextPersonNumber}`,
             name: "",
             color: COLORS[counter % COLORS.length],
             id,
