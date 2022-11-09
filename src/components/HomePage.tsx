@@ -33,7 +33,6 @@ const PersonInput = ({
   changePersonProp: Function;
   deletePerson: Function;
 }>) => {
-  console.log("person input started rendering");
   return (
     <li className="flex gap-2 items-center">
       <PersonCircle person={person} />
@@ -44,7 +43,9 @@ const PersonInput = ({
         onChange={(value: string) => changePersonProp(person, "name", value)}
         focus
       />
-      <Button onClick={() => deletePerson(person.id)}>X</Button>
+      <Button className="bg-red-700" onClick={() => deletePerson(person.id)}>
+        X
+      </Button>
     </li>
   );
 };
@@ -64,6 +65,7 @@ const ProductInputs = ({
       <div className="flex flex-col w-full gap-2">
         <Input
           className="w-full"
+          placeholder="Produto"
           value={product.name}
           onChange={(value: string) =>
             changeProductProp(product, "name", value)
@@ -103,7 +105,12 @@ const ProductInputs = ({
         </div>
       </div>
       <div className="whitespace-nowrap ">
-        <Button onClick={() => deleteProduct(product.id)}>X</Button>
+        <Button
+          className="bg-red-700"
+          onClick={() => deleteProduct(product.id)}
+        >
+          X
+        </Button>
         <p>Total:</p>
         <p>{formatCurrency(totalPrice)}</p>
       </div>
@@ -131,10 +138,10 @@ export const HomePage = () => {
 
   return (
     <div>
-      <div className="flex flex-col gap-4 mx-auto max-w-2xl p-2 bg-yellow-200">
+      <div className="flex flex-col gap-4 mx-auto max-w-2xl p-2">
         <div className="flex justify-between">
-          <p>Pessoas:</p>
-          <Button onClick={addPerson}>Adicionar +</Button>
+          <p>Pessoas ({people.size}):</p>
+          <Button onClick={addPerson}>Adicionar Pessoa+</Button>
         </div>
         <ul className="flex flex-col gap-4">
           {people.size ? (
@@ -152,10 +159,7 @@ export const HomePage = () => {
             </p>
           )}
         </ul>
-        <div className="flex justify-between">
-          <p>Produtos:</p>
-          <Button onClick={addProduct}>Adicionar +</Button>
-        </div>
+        <p>Produtos ({products.size}):</p>
         <ul className="flex flex-col gap-8">
           {[...products.values()].map((product) => (
             <ProductInputs
@@ -166,6 +170,9 @@ export const HomePage = () => {
             />
           ))}
         </ul>
+        <Button className="mx-auto" onClick={addProduct}>
+          Adicionar Produto+
+        </Button>
         <p className="text-right">
           Serviço:{" "}
           <Input

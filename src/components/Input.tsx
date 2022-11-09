@@ -10,10 +10,10 @@ interface InputProps
 }
 
 export const Input = ({
-  value,
+  value = "",
   onChange,
   maskFunction,
-  focus,
+  focus = true,
   className,
   ...rest
 }: InputProps) => {

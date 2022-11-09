@@ -1,6 +1,9 @@
+import { cn } from "@utils/classnames";
+
 export const Button = ({
   children,
   onClick,
+  className,
   ...rest
 }: React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -9,7 +12,10 @@ export const Button = ({
   return (
     <button
       onClick={onClick}
-      className="rounded-md border-2 border-black bg-white  px-4"
+      className={cn(
+        "rounded-lg bg-blue-700 font-bold text-white px-3 py-1 hover:brightness-90",
+        className
+      )}
       {...rest}
     >
       {children}
