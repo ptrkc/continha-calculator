@@ -5,6 +5,7 @@ import { usePeople, Person } from "@hooks/usePeople";
 import { useProducts, Product } from "@hooks/useProducts";
 import { formatCurrency } from "@utils/formatCurrency";
 import { cn } from "@utils/classnames";
+import { currencyInput } from "@utils/currencyInput";
 
 const PersonAvatar = ({ person }: { person: Person }) => {
   const nameToUse = person.name.trim() || person.defaultName;
@@ -39,7 +40,7 @@ const PersonInput = ({
       <PersonAvatar person={person} />
 
       <Input
-        className="w-full"
+        className="w-full capitalize"
         value={person.name}
         placeholder={person.defaultName}
         onChange={(value: string) => changePersonProp(person, "name", value)}
@@ -74,20 +75,21 @@ const ProductInputs = ({
         />
         <div className="flex justify-between">
           <span>
-            Preço un.:{" "}
+            Preço un.: R${" "}
             <Input
-              className="w-24 text-right"
+              className="w-20 text-right"
               maxLength={11}
               inputMode="numeric"
+              placeholder="0,00"
               value={product.unitPrice}
               onChange={(value: string) =>
                 changeProductProp(
                   product,
                   "unitPrice",
-                  Number(value.replace(/[^\d]/g, ""))
+                  currencyInput.toCents(value)
                 )
               }
-              maskFunction={formatCurrency}
+              maskFunction={currencyInput.format}
             />
           </span>
           <span>
@@ -123,7 +125,6 @@ export const HomePage = () => {
   const { people, addPerson, changePersonProp, deletePerson } = usePeople();
   const { products, addProduct, changeProductProp, deleteProduct } =
     useProducts();
-
   const [tax, setTax] = useState(10);
 
   const calculateTotalWithTax = (
@@ -140,8 +141,8 @@ export const HomePage = () => {
   return (
     <div>
       <div className="flex flex-col gap-4 mx-auto max-w-2xl p-2">
-        <div className="flex justify-between">
-          <p>Pessoas ({people.size}):</p>
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-bold">Pessoas ({people.size}):</h2>
           <Button onClick={addPerson}>Adicionar Pessoa+</Button>
         </div>
         <ul className="flex flex-col gap-4">
@@ -160,7 +161,7 @@ export const HomePage = () => {
             </p>
           )}
         </ul>
-        <p>Produtos ({products.size}):</p>
+        <h2 className="text-xl font-bold">Produtos ({products.size}):</h2>
         <ul className="flex flex-col gap-8">
           {[...products.values()].map((product) => (
             <ProductInputs
