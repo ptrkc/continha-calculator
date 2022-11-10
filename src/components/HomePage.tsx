@@ -1,7 +1,7 @@
 import { PropsWithChildren, useState } from "react";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
-import { usePeople, Person } from "@/hooks/usePeople";
+import { usePeopleStore, Person } from "@/hooks/usePeopleStore";
 import { useProducts, Product } from "@/hooks/useProducts";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { cn } from "@/utils/classnames";
@@ -154,10 +154,14 @@ const ProductInputs = ({
 };
 
 export const HomePage = () => {
-  const { people, addPerson, changePersonProp, deletePerson } = usePeople();
+  // const { people, addPerson, changePersonProp, deletePerson } = usePeople();
   const { products, addProduct, changeProductProp, deleteProduct } =
     useProducts();
   const [tax, setTax] = useState(10);
+
+  const { people, addPerson, changePersonProp, deletePerson } = usePeopleStore(
+    (state) => state
+  );
 
   const calculateTotalWithTax = (
     products: Map<string, Product>,
