@@ -1,11 +1,11 @@
 import { PropsWithChildren, useState } from "react";
-import { Button } from "@components/Button";
-import { Input } from "@components/Input";
-import { usePeople, Person } from "@hooks/usePeople";
-import { useProducts, Product } from "@hooks/useProducts";
-import { formatCurrency } from "@utils/formatCurrency";
-import { cn } from "@utils/classnames";
-import { currencyInput } from "@utils/currencyInput";
+import { Button } from "@/components/Button";
+import { Input } from "@/components/Input";
+import { usePeople, Person } from "@/hooks/usePeople";
+import { useProducts, Product } from "@/hooks/useProducts";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { cn } from "@/utils/classnames";
+import { currencyInput } from "@/utils/currencyInput";
 
 const PersonAvatar = ({
   person,
@@ -144,6 +144,7 @@ const ProductInputs = ({
             person={person}
             variant="outline"
             size="lg"
+            // onClick={changeProductProp}
             key={person.id}
           />
         ))}

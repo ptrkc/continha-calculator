@@ -1,5 +1,5 @@
-import { cn } from "@utils/classnames";
 import { useState } from "react";
+import { cn } from "@/utils/classnames";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   value: string | number;

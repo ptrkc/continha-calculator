@@ -5,6 +5,9 @@ export type Person = {
   name: string;
   color: string;
   id: string;
+  payingFor: {
+    [key: string]: boolean | number;
+  };
 };
 
 const COLORS = [
@@ -31,6 +34,7 @@ export const usePeople = () => {
           name: "",
           color: COLORS[0],
           id: "person-1",
+          payingFor: {},
         },
       ],
     ])
@@ -52,6 +56,7 @@ export const usePeople = () => {
             name: "",
             color: COLORS[counter % COLORS.length],
             id,
+            payingFor: {},
           },
         ],
       ])
