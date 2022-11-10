@@ -7,13 +7,21 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { cn } from "@/utils/classnames";
 import { currencyInput } from "@/utils/currencyInput";
 
+import styles from "./HomePage.module.css";
+
+const chooseVariant = (person: Person, productId: string) => {
+  if (person.payingFor[productId] === true) return "solid";
+  if (typeof person.payingFor[productId] === "number") return "partial";
+  return "outline";
+};
+
 const PersonAvatar = ({
   person,
-  variant = "solid",
+  productId,
   size = "sm",
 }: {
   person: Person;
-  variant?: "solid" | "outline";
+  productId: string;
   size?: "sm" | "lg";
 }) => {
   const nameToUse = person.name.trim() || person.defaultName;
@@ -23,16 +31,20 @@ const PersonAvatar = ({
       ? `${splitName[0][0]}${splitName[1][0]}`
       : nameToUse.slice(0, 2);
 
-  const classes = {
-    solid: `bg-${person.color}-500 text-white`,
-    outline: `bg-white border-2 border-${person.color}-500 text-black`,
+  const variants = {
+    solid: styles.solid,
+    partial: styles.partial,
+    outline: styles.outline,
   };
+
+  const variant = variants[chooseVariant(person, productId)];
   return (
     <span
       className={cn(
-        "shrink-0 rounded-full w-8 h-8 flex overflow-hidden justify-center items-center",
-        classes[variant],
-        size === "sm" ? "w-8 h-8" : "w-14 h-14"
+        "shrink-0 rounded-full w-8 h-8 flex overflow-hidden justify-center items-center border-2",
+        size === "sm" ? "w-8 h-8" : "w-14 h-14",
+        styles[person.color],
+        variant
       )}
     >
       <span>{abbreviation}</span>
@@ -142,7 +154,7 @@ const ProductInputs = ({
         {[...people.values()].map((person) => (
           <PersonAvatar
             person={person}
-            variant="outline"
+            productId={product.id}
             size="lg"
             // onClick={changeProductProp}
             key={person.id}
@@ -154,17 +166,11 @@ const ProductInputs = ({
 };
 
 export const HomePage = () => {
-  // const { people, addPerson, changePersonProp, deletePerson } = usePeople();
-  // const { products, addProduct, changeProductProp, deleteProduct } =
-  //   useProducts();
-  const [tax, setTax] = useState(10);
-
-  const { people, addPerson, changePersonProp, deletePerson } = usePeopleStore(
-    (state) => state
-  );
-
+  const { people, addPerson, changePersonProp, deletePerson } =
+    usePeopleStore();
   const { products, addProduct, changeProductProp, deleteProduct } =
     useProductsStore();
+  const [tax, setTax] = useState(10);
 
   const calculateTotalWithTax = (
     products: Map<string, Product>,
@@ -202,15 +208,19 @@ export const HomePage = () => {
         </ul>
         <h2 className="text-xl font-bold">Produtos ({products.size}):</h2>
         <ul className="flex flex-col gap-4">
-          {[...products.values()].map((product) => (
-            <ProductInputs
-              key={product.id}
-              product={product}
-              people={people}
-              changeProductProp={changeProductProp}
-              deleteProduct={deleteProduct}
-            />
-          ))}
+          {products.size ? (
+            [...products.values()].map((product) => (
+              <ProductInputs
+                key={product.id}
+                product={product}
+                people={people}
+                changeProductProp={changeProductProp}
+                deleteProduct={deleteProduct}
+              />
+            ))
+          ) : (
+            <p className="text-center">Nenhum produto? 🤔</p>
+          )}
         </ul>
         <Button className="mx-auto" onClick={addProduct}>
           Adicionar Produto+

@@ -1,0 +1,49 @@
+.red {
+  --person-color: var(--color-red-500)
+}
+.yellow {
+  --person-color: var(--color-yellow-500)
+}
+.lime {
+  --person-color: var(--color-lime-500)
+}
+.blue {
+  --person-color: var(--color-blue-500)
+}
+.purple {
+  --person-color: var(--color-purple-500)
+}
+.pink {
+  --person-color: var(--color-pink-500)
+}
+.orange {
+  --person-color: var(--color-orange-500)
+}
+.emerald {
+  --person-color: var(--color-emerald-500)
+}
+.cyan {
+  --person-color: var(--color-cyan-500)
+}
+.fuchsia {
+  --person-color: var(--color-fuchsia-500)
+}
+.partial {
+  border-color: var(--person-color);
+  background: linear-gradient(
+    to right,
+    var(--person-color),
+    var(--person-color) 50%,
+    white 50%,
+    white
+    );
+}
+
+.solid {
+  background: var(--person-color);
+  color: white;
+}
+.outline {
+  border-color: var(--person-color);
+  color: black;
+}
