@@ -4,53 +4,11 @@ import { Input } from "@/components/Input";
 import { usePeopleStore, Person } from "@/hooks/usePeopleStore";
 import { useProductsStore, Product } from "@/hooks/useProductsStore";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { cn } from "@/utils/classnames";
 import { currencyInput } from "@/utils/currencyInput";
 
-import styles from "./HomePage.module.css";
-
-const chooseVariant = (person: Person, productId: string) => {
-  if (person.payingFor[productId] === true) return "solid";
-  if (typeof person.payingFor[productId] === "number") return "partial";
-  return "outline";
-};
-
-const PersonAvatar = ({
-  person,
-  productId,
-  size = "sm",
-}: {
-  person: Person;
-  productId: string;
-  size?: "sm" | "lg";
-}) => {
-  const nameToUse = person.name.trim() || person.defaultName;
-  const splitName = nameToUse.split(/\s+/);
-  const abbreviation =
-    splitName.length > 1 && splitName[1]
-      ? `${splitName[0][0]}${splitName[1][0]}`
-      : nameToUse.slice(0, 2);
-
-  const variants = {
-    solid: styles.solid,
-    partial: styles.partial,
-    outline: styles.outline,
-  };
-
-  const variant = variants[chooseVariant(person, productId)];
-  return (
-    <span
-      className={cn(
-        "shrink-0 rounded-full w-8 h-8 flex overflow-hidden justify-center items-center border-2",
-        size === "sm" ? "w-8 h-8" : "w-14 h-14",
-        styles[person.color],
-        variant
-      )}
-    >
-      <span>{abbreviation}</span>
-    </span>
-  );
-};
+import { IconButton } from "./IconButton";
+import { CloseIcon, TrashIcon } from "./Icons";
+import { Avatar, AvatarSplittingButton } from "./Avatar";
 
 const PersonInput = ({
   person,
@@ -62,8 +20,8 @@ const PersonInput = ({
   deletePerson: Function;
 }>) => {
   return (
-    <li className="flex gap-2 items-center">
-      <PersonAvatar person={person} />
+    <li className="flex gap-2 items-center border rounded-lg p-2 shadow-sm">
+      <Avatar person={person} />
       <Input
         className="w-full"
         value={person.name}
@@ -72,9 +30,12 @@ const PersonInput = ({
           changePersonProp(person, "name", event.target.value.toUpperCase())
         }
       />
-      <Button className="bg-red-700" onClick={() => deletePerson(person.id)}>
-        X
-      </Button>
+      <IconButton
+        className="bg-red-700"
+        onClick={() => deletePerson(person.id)}
+      >
+        <TrashIcon />
+      </IconButton>
     </li>
   );
 };
@@ -92,7 +53,7 @@ const ProductInputs = ({
 }>) => {
   const totalPrice = product.unitPrice * product.quantity;
   return (
-    <li className="flex flex-col border rounded-md p-2 border-red-500">
+    <li className="flex flex-col border rounded-lg p-2 shadow-md">
       <div className="flex gap-2 mb-4 items-center justify-between">
         <div className="flex flex-col gap-2">
           <Input
@@ -140,23 +101,23 @@ const ProductInputs = ({
           </span>
         </div>
         <div className="whitespace-nowrap">
-          <Button
+          <IconButton
             className="bg-red-700"
             onClick={() => deleteProduct(product.id)}
           >
-            X
-          </Button>
+            <CloseIcon />
+          </IconButton>
           <p>Total:</p>
           <p>{formatCurrency(totalPrice)}</p>
         </div>
       </div>
       <div className="flex flex-wrap gap-2 justify-around">
         {[...people.values()].map((person) => (
-          <PersonAvatar
+          <AvatarSplittingButton
             person={person}
             productId={product.id}
             size="lg"
-            // onClick={changeProductProp}
+            onClick={() => {}}
             key={person.id}
           />
         ))}

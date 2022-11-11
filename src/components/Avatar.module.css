@@ -28,8 +28,10 @@
 .fuchsia {
   --person-color: var(--color-fuchsia-500)
 }
-.partial {
+.avatar {
   border-color: var(--person-color);
+}
+.partial {
   background: linear-gradient(
     to right,
     var(--person-color),
@@ -38,12 +40,10 @@
     white
     );
 }
-
 .solid {
   background: var(--person-color);
   color: white;
 }
 .outline {
-  border-color: var(--person-color);
   color: black;
 }
