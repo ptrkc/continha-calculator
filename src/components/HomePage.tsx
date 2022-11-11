@@ -2,7 +2,7 @@ import { PropsWithChildren, useState } from "react";
 import { Avatar, AvatarSplittingButton } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { IconButton } from "@/components/IconButton";
-import { CloseIcon, PlusIcon, TrashIcon } from "@/components/Icons";
+import { PlusIcon, TrashIcon } from "@/components/Icons";
 import { Input } from "@/components/Input";
 import { usePeopleStore, Person } from "@/hooks/usePeopleStore";
 import { useProductsStore, Product } from "@/hooks/useProductsStore";
@@ -57,7 +57,7 @@ const ProductInputs = ({
         <div className="flex flex-col gap-2">
           <Input
             className="w-full"
-            placeholder="Produto"
+            placeholder={product.defaultName}
             value={product.name}
             onChange={(event) =>
               changeProductProp(product, "name", event.target.value)
@@ -104,7 +104,7 @@ const ProductInputs = ({
             className="bg-red-700"
             onClick={() => deleteProduct(product.id)}
           >
-            <CloseIcon />
+            <TrashIcon />
           </IconButton>
           <p>Total:</p>
           <p>{formatCurrency(totalPrice)}</p>

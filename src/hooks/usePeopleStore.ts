@@ -67,7 +67,7 @@ const _changePersonProp = (
 
 const _addPerson = (state: PeopleState) => {
   const currentCounter = state._counter + 1;
-  const id = "person-" + currentCounter;
+  const id = `person-${currentCounter}`;
   return {
     _counter: currentCounter,
     people: new Map([

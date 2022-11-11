@@ -1,6 +1,7 @@
 import create from "zustand";
 
 export type Product = {
+  defaultName: string;
   name: string;
   unitPrice: number;
   quantity: number;
@@ -8,6 +9,7 @@ export type Product = {
 };
 
 interface ProductsState {
+  _counter: number;
   products: Map<string, Product>;
   deleteProduct: (id: string) => void;
   addProduct: () => void;
@@ -19,10 +21,12 @@ interface ProductsState {
 }
 
 export const useProductsStore = create<ProductsState>((set) => ({
+  _counter: 1,
   products: new Map([
     [
       "product-1",
       {
+        defaultName: "Produto 1",
         name: "",
         unitPrice: 0,
         quantity: 1,
@@ -30,25 +34,39 @@ export const useProductsStore = create<ProductsState>((set) => ({
       },
     ],
   ]),
-  deleteProduct: (id) => set((state) => _deleteProduct(state.products, id)),
+  deleteProduct: (id) => set((state) => _deleteProduct(state, id)),
   addProduct: () => set(_addProduct),
   changeProductProp: (product, propKey, newValue) =>
     set((state) => _changeProductProp(state, product, propKey, newValue)),
 }));
 
 const _addProduct = (state: ProductsState) => {
-  const id = "product-" + Math.random().toString(16).slice(2);
+  const currentCounter = state._counter + 1;
+  const id = `product-${currentCounter}`;
   return {
+    _counter: currentCounter,
     products: new Map([
       ...state.products,
-      [id, { name: "", unitPrice: 0, quantity: 1, id }],
+      [
+        id,
+        {
+          defaultName: `Produto ${currentCounter}`,
+          name: "",
+          unitPrice: 0,
+          quantity: 1,
+          id,
+        },
+      ],
     ]),
   };
 };
-const _deleteProduct = (products: Map<string, Product>, id: string) => {
-  const newProducts = new Map([...products]);
+const _deleteProduct = (state: ProductsState, id: string) => {
+  const newProducts = new Map([...state.products]);
   newProducts.delete(id);
-  return { products: newProducts };
+  return {
+    products: newProducts,
+    _counter: newProducts.size === 0 ? 0 : state._counter,
+  };
 };
 
 const _changeProductProp = (
