@@ -1,14 +1,13 @@
 import { PropsWithChildren, useState } from "react";
+import { Avatar, AvatarSplittingButton } from "@/components/Avatar";
 import { Button } from "@/components/Button";
+import { IconButton } from "@/components/IconButton";
+import { CloseIcon, PlusIcon, TrashIcon } from "@/components/Icons";
 import { Input } from "@/components/Input";
 import { usePeopleStore, Person } from "@/hooks/usePeopleStore";
 import { useProductsStore, Product } from "@/hooks/useProductsStore";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { currencyInput } from "@/utils/currencyInput";
-
-import { IconButton } from "./IconButton";
-import { CloseIcon, TrashIcon } from "./Icons";
-import { Avatar, AvatarSplittingButton } from "./Avatar";
 
 const PersonInput = ({
   person,
@@ -149,7 +148,9 @@ export const HomePage = () => {
       <div className="flex flex-col gap-4 mx-auto max-w-2xl p-2">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold">Pessoas ({people.size}):</h2>
-          <Button onClick={addPerson}>Adicionar Pessoa+</Button>
+          <Button onClick={addPerson} icon={<PlusIcon />}>
+            Adicionar Pessoa
+          </Button>
         </div>
         <ul className="flex flex-col gap-4">
           {people.size ? (
@@ -183,8 +184,8 @@ export const HomePage = () => {
             <p className="text-center">Nenhum produto? 🤔</p>
           )}
         </ul>
-        <Button className="mx-auto" onClick={addProduct}>
-          Adicionar Produto+
+        <Button className="mx-auto" onClick={addProduct} icon={<PlusIcon />}>
+          Adicionar Produto
         </Button>
         <p className="text-right">
           Serviço:{" "}
