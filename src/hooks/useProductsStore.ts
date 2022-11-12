@@ -16,7 +16,7 @@ interface ProductsState {
   changeProductProp: (
     product: Product,
     propKey: string,
-    newValue: string
+    newValue: string | number
   ) => void;
 }
 
@@ -73,7 +73,7 @@ const _changeProductProp = (
   state: ProductsState,
   product: Product,
   propKey: string,
-  newValue: string
+  newValue: string | number
 ) => {
   return {
     products: new Map(state.products).set(product.id, {

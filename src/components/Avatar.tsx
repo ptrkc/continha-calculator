@@ -1,5 +1,5 @@
-import styles from "./Avatar.module.css";
 import { MouseEventHandler } from "react";
+import styles from "./Avatar.module.css";
 import { Person } from "@/hooks/usePeopleStore";
 import { cn } from "@/utils/classnames";
 
