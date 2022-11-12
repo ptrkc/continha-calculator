@@ -32,9 +32,8 @@ const PersonInput = ({
       <IconButton
         className="bg-red-700"
         onClick={() => deletePerson(person.id)}
-      >
-        <TrashIcon />
-      </IconButton>
+        icon={<TrashIcon />}
+      />
     </li>
   );
 };
@@ -50,6 +49,7 @@ const ProductInputs = ({
   changeProductProp: Function;
   deleteProduct: Function;
 }>) => {
+  const splitProduct = usePeopleStore((state) => state.splitProduct);
   const totalPrice = product.unitPrice * product.quantity;
   return (
     <li className="flex flex-col border rounded-lg p-2 shadow-md">
@@ -99,13 +99,12 @@ const ProductInputs = ({
             />
           </span>
         </div>
-        <div className="whitespace-nowrap">
+        <div className="whitespace-nowrap flex flex-col items-end">
           <IconButton
             className="bg-red-700"
             onClick={() => deleteProduct(product.id)}
-          >
-            <TrashIcon />
-          </IconButton>
+            icon={<TrashIcon />}
+          />
           <p>Total:</p>
           <p>{formatCurrency(totalPrice)}</p>
         </div>
@@ -116,7 +115,9 @@ const ProductInputs = ({
             person={person}
             productId={product.id}
             size="lg"
-            onClick={() => {}}
+            onClick={() => {
+              splitProduct(person, product.id);
+            }}
             key={person.id}
           />
         ))}

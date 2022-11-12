@@ -1,14 +1,17 @@
+import { ReactNode } from "react";
 import { cn } from "@/utils/classnames";
 
+type IconButtonType = React.DetailedHTMLProps<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+> & { icon: ReactNode };
+
 export const IconButton = ({
-  children,
+  icon,
   onClick,
   className,
   ...rest
-}: React.DetailedHTMLProps<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  HTMLButtonElement
->) => {
+}: IconButtonType) => {
   return (
     <button
       onClick={onClick}
@@ -18,7 +21,7 @@ export const IconButton = ({
       )}
       {...rest}
     >
-      {children}
+      {icon}
     </button>
   );
 };

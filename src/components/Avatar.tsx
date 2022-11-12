@@ -1,4 +1,5 @@
 import styles from "./Avatar.module.css";
+import { MouseEventHandler } from "react";
 import { Person } from "@/hooks/usePeopleStore";
 import { cn } from "@/utils/classnames";
 
@@ -27,17 +28,15 @@ const AvatarBase = ({
   person: Person;
   size: "sm" | "lg";
   variant?: "solid" | "partial" | "outline";
-  onClick?: Function;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
 }) => {
   const abbreviation = abbreviate(person);
 
-  const CustomTag = onClick
-    ? "button"
-    : ("span" as keyof JSX.IntrinsicElements);
+  const CustomTag = onClick ? "button" : "span";
 
   return (
     <CustomTag
-      {...onClick}
+      {...{ onClick }}
       className={cn(
         "select-none shrink-0 rounded-full w-8 h-8 flex overflow-hidden justify-center items-center border-2",
         size === "sm" ? "w-8 h-8" : "w-14 h-14",
@@ -70,7 +69,7 @@ export const AvatarSplittingButton = ({
   person: Person;
   productId: string;
   size?: "sm" | "lg";
-  onClick: Function;
+  onClick: MouseEventHandler<HTMLButtonElement>;
 }) => {
   const variant = chooseVariant(person, productId);
   return (

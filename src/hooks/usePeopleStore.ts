@@ -29,6 +29,7 @@ interface PeopleState {
   deletePerson: (id: string) => void;
   addPerson: () => void;
   changePersonProp: (person: Person, propKey: string, newValue: string) => void;
+  splitProduct: (person: Person, productId: string) => void;
 }
 
 export const usePeopleStore = create<PeopleState>((set) => ({
@@ -49,6 +50,8 @@ export const usePeopleStore = create<PeopleState>((set) => ({
   addPerson: () => set(_addPerson),
   changePersonProp: (person, propKey, newValue) =>
     set((state) => _changePersonProp(state, person, propKey, newValue)),
+  splitProduct: (person, productId) =>
+    set((state) => _splitProduct(state, person, productId)),
 }));
 
 const _changePersonProp = (
@@ -61,6 +64,22 @@ const _changePersonProp = (
     people: new Map(state.people).set(person.id, {
       ...person,
       [propKey]: newValue,
+    }),
+  };
+};
+
+const _splitProduct = (
+  state: PeopleState,
+  person: Person,
+  productId: string
+) => {
+  return {
+    people: new Map(state.people).set(person.id, {
+      ...person,
+      payingFor: {
+        ...person.payingFor,
+        [productId]: !person.payingFor[productId],
+      },
     }),
   };
 };
