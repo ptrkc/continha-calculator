@@ -30,7 +30,7 @@ export const Input = ({
 
   return (
     <input
-      className={cn("border-black border-b-2 bg-white px-2", className)}
+      className={cn("border-black border-b-2 bg-white px-1", className)}
       value={inputValue}
       onChange={onChangeWithFormat}
       {...rest}

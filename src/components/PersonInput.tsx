@@ -14,7 +14,7 @@ export const PersonInput = ({
   deletePerson: Function;
 }) => {
   return (
-    <li className="flex gap-2 items-center border rounded-lg p-2 shadow-sm">
+    <li className="flex gap-2 items-center border rounded-lg p-2 shadow-md">
       <Avatar person={person} />
       <Input
         className="w-full"

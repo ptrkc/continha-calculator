@@ -51,13 +51,22 @@ export const useItemsStore = create<ItemsState>((set) => ({
 }));
 
 const _shareItem = (state: ItemsState, itemId: string, personId: string) => {
+  let newSharingValue: boolean | number = false;
   const item = state.items.get(itemId)!;
+  const itemShareBy = item.sharedBy[personId];
+  if (itemShareBy === undefined || itemShareBy === false) {
+    newSharingValue = true;
+  } else if (itemShareBy === true) {
+    newSharingValue = 0;
+  } else if (typeof itemShareBy === "number") {
+    newSharingValue = false;
+  }
   return {
     items: new Map(state.items).set(item.id, {
       ...item,
       sharedBy: {
         ...item.sharedBy,
-        [personId]: !item.sharedBy[personId],
+        [personId]: newSharingValue,
       },
     }),
   };

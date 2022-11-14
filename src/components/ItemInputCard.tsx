@@ -75,15 +75,32 @@ export const ItemInputCard = ({ itemId }: { itemId: string }) => {
       </div>
       <div className="flex flex-wrap gap-2 justify-around">
         {[...people.values()].map((person) => (
-          <AvatarSplittingButton
-            person={person}
-            item={item}
-            size="lg"
-            onClick={() => {
-              shareItem(item.id, person.id);
-            }}
-            key={person.id}
-          />
+          <div key={person.id}>
+            <AvatarSplittingButton
+              person={person}
+              item={item}
+              size="lg"
+              onClick={() => {
+                shareItem(item.id, person.id);
+              }}
+            />
+            {typeof item.sharedBy[person.id] === "number" && (
+              <Input
+                className="w-14 text-center"
+                type="text"
+                value={item.sharedBy[person.id]}
+                onChange={(event) =>
+                  changeItemProp(item, "sharedBy", {
+                    ...item.sharedBy,
+                    [person.id]: currencyInput.toCents(event.target.value),
+                  })
+                }
+                format={currencyInput.format}
+                inputMode="numeric"
+                placeholder="0,00"
+              />
+            )}
+          </div>
         ))}
       </div>
     </li>

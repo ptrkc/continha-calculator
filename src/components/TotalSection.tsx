@@ -61,7 +61,7 @@ const PersonTotalCard = ({
 }) => {
   const total = personTotals.reduce((prev, curr) => prev + curr.toPay, 0);
   return (
-    <div className="items-center border rounded-lg p-2 shadow-sm font-mono">
+    <div className="items-center border rounded-lg p-2 shadow-md font-mono">
       <div className="font-sans flex gap-2 items-center">
         <Avatar person={person} />
         <span className="font-bold">{person.name || person.defaultName}</span>
