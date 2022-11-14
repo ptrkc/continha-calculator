@@ -5,9 +5,6 @@ export type Person = {
   name: string;
   color: string;
   id: string;
-  payingFor: {
-    [key: string]: boolean | number;
-  };
 };
 
 const COLORS = [
@@ -29,7 +26,6 @@ interface PeopleState {
   deletePerson: (id: string) => void;
   addPerson: () => void;
   changePersonProp: (person: Person, propKey: string, newValue: string) => void;
-  splitProduct: (person: Person, productId: string) => void;
 }
 
 export const usePeopleStore = create<PeopleState>((set) => ({
@@ -42,7 +38,6 @@ export const usePeopleStore = create<PeopleState>((set) => ({
         name: "",
         color: COLORS[0],
         id: "person-1",
-        payingFor: {},
       },
     ],
   ]),
@@ -50,8 +45,6 @@ export const usePeopleStore = create<PeopleState>((set) => ({
   addPerson: () => set(_addPerson),
   changePersonProp: (person, propKey, newValue) =>
     set((state) => _changePersonProp(state, person, propKey, newValue)),
-  splitProduct: (person, productId) =>
-    set((state) => _splitProduct(state, person, productId)),
 }));
 
 const _changePersonProp = (
@@ -64,22 +57,6 @@ const _changePersonProp = (
     people: new Map(state.people).set(person.id, {
       ...person,
       [propKey]: newValue,
-    }),
-  };
-};
-
-const _splitProduct = (
-  state: PeopleState,
-  person: Person,
-  productId: string
-) => {
-  return {
-    people: new Map(state.people).set(person.id, {
-      ...person,
-      payingFor: {
-        ...person.payingFor,
-        [productId]: !person.payingFor[productId],
-      },
     }),
   };
 };
@@ -101,7 +78,6 @@ const _addPerson = (state: PeopleState) => {
           name: "",
           color: COLORS[state._counter % COLORS.length],
           id,
-          payingFor: {},
         },
       ],
     ]),

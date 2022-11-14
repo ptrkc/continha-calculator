@@ -2,10 +2,11 @@ import { MouseEventHandler } from "react";
 import styles from "./Avatar.module.css";
 import { Person } from "@/hooks/usePeopleStore";
 import { cn } from "@/utils/classnames";
+import { Item } from "@/hooks/useItemsStore";
 
-const chooseVariant = (person: Person, productId: string) => {
-  if (person.payingFor[productId] === true) return "solid";
-  if (typeof person.payingFor[productId] === "number") return "partial";
+const chooseVariant = (person: Person, item: Item) => {
+  if (item.sharedBy[person.id] === true) return "solid";
+  if (typeof item.sharedBy[person.id] === "number") return "partial";
   return "outline";
 };
 
@@ -62,16 +63,16 @@ export const Avatar = ({
 
 export const AvatarSplittingButton = ({
   person,
-  productId,
+  item,
   size = "lg",
   onClick,
 }: {
   person: Person;
-  productId: string;
+  item: Item;
   size?: "sm" | "lg";
   onClick: MouseEventHandler<HTMLButtonElement>;
 }) => {
-  const variant = chooseVariant(person, productId);
+  const variant = chooseVariant(person, item);
   return (
     <AvatarBase
       person={person}
