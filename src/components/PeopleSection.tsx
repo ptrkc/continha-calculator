@@ -17,9 +17,9 @@ export const PeopleSection = () => {
   return (
     <>
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">Pessoas ({people.size}):</h2>
+        <h2>Pessoas ({people.size}):</h2>
         <Button onClick={addPerson} icon={<PlusIcon />}>
-          Adicionar Pessoa
+          Pessoa
         </Button>
       </div>
       <ul className="flex flex-col gap-4">

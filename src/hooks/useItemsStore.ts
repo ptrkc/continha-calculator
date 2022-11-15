@@ -19,7 +19,7 @@ interface ItemsState {
   changeItemProp: (
     item: Item,
     propKey: string,
-    newValue: string | number
+    newValue: string | number | object
   ) => void;
   shareItem: (itemId: string, personId: string) => void;
   deleteShareRelation: (personId: string) => void;
@@ -31,7 +31,7 @@ export const useItemsStore = create<ItemsState>((set) => ({
     [
       "item-1",
       {
-        defaultName: "Item 1",
+        defaultName: "ITEM 1",
         name: "",
         unitPrice: 0,
         quantity: 1,
@@ -88,7 +88,7 @@ const _addItem = (state: ItemsState) => {
       [
         id,
         {
-          defaultName: `Item ${currentCounter}`,
+          defaultName: `ITEM ${currentCounter}`,
           name: "",
           unitPrice: 0,
           quantity: 1,
@@ -111,7 +111,7 @@ const _changeItemProp = (
   state: ItemsState,
   item: Item,
   propKey: string,
-  newValue: string | number
+  newValue: string | number | object
 ) => {
   return {
     items: new Map(state.items).set(item.id, {

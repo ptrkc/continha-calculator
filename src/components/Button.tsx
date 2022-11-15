@@ -19,7 +19,7 @@ export const Button = ({
     <button
       onClick={onClick}
       className={cn(
-        "flex justify-center items-center rounded-lg bg-blue-700 font-bold text-white px-3 py-1 hover:brightness-90",
+        "flex justify-center items-center rounded-full bg-blue-500 font-bold text-white px-3 py-1",
         icon ? "pl-0 pr-3" : "px-2",
         className
       )}

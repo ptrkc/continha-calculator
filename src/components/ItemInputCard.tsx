@@ -5,6 +5,7 @@ import { usePeopleStore } from "@/hooks/usePeopleStore";
 import { useItemsStore } from "@/hooks/useItemsStore";
 import { currencyInput } from "@/utils/currencyInput";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { IntegerInput } from "./IntegerInput";
 
 export const ItemInputCard = ({ itemId }: { itemId: string }) => {
   const item = useItemsStore((state) => state.items.get(itemId))!;
@@ -19,9 +20,9 @@ export const ItemInputCard = ({ itemId }: { itemId: string }) => {
 
   const totalPrice = item.unitPrice * item.quantity;
   return (
-    <li className="flex flex-col border rounded-lg p-2 shadow-md">
-      <div className="flex gap-2 mb-4 items-center justify-between">
-        <div className="flex flex-col gap-2">
+    <li className="flex flex-col border rounded-xl p-2 shadow-md bg-white">
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2">
           <Input
             className="w-full"
             placeholder={item.defaultName}
@@ -30,47 +31,49 @@ export const ItemInputCard = ({ itemId }: { itemId: string }) => {
               changeItemProp(item, "name", event.target.value.toUpperCase())
             }
           />
-          <span>
-            Preço un.: R${" "}
-            <Input
-              className="w-20 text-right"
-              maxLength={11}
-              inputMode="numeric"
-              placeholder="0,00"
-              value={item.unitPrice}
-              onChange={(event) =>
-                changeItemProp(
-                  item,
-                  "unitPrice",
-                  currencyInput.toCents(event.target.value)
-                )
-              }
-              format={currencyInput.format}
-            />
-          </span>
-          <span>
-            Qtd.:{" "}
-            <Input
-              className="w-16 text-right"
-              type="number"
-              step={1}
-              min={1}
-              value={String(item.quantity)}
-              onChange={(event) =>
-                changeItemProp(item, "quantity", Number(event.target.value))
-              }
-            />
-          </span>
-        </div>
-        <div className="whitespace-nowrap flex flex-col items-end">
           <DeleteButton onClick={() => deleteItem(item.id)} />
-          <p>Total:</p>
-          <p>{formatCurrency(totalPrice)}</p>
+        </div>
+        <div>
+          Preço un.: R${" "}
+          <Input
+            className="w-20 text-right"
+            maxLength={11}
+            inputMode="numeric"
+            placeholder="0,00"
+            value={item.unitPrice}
+            onChange={(event) =>
+              changeItemProp(
+                item,
+                "unitPrice",
+                currencyInput.toCents(event.target.value)
+              )
+            }
+            format={currencyInput.format}
+          />
+        </div>
+        <div>
+          <span>Qtd.: </span>
+          <IntegerInput
+            value={item.quantity}
+            onChange={(event) =>
+              changeItemProp(item, "quantity", Number(event.target.value))
+            }
+            buttonsFunction={(newValue) =>
+              changeItemProp(item, "quantity", newValue)
+            }
+          />
+        </div>
+        <div className="whitespace-nowrap">
+          <span>Total: </span>
+          <span>{formatCurrency(totalPrice)}</span>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2 justify-around">
+      <div className="py-2 flex flex-wrap gap-y-2 justify-around">
         {[...people.values()].map((person) => (
-          <div key={person.id}>
+          <div
+            className="flex flex-col items-center gap-y-1 w-[4.6rem]"
+            key={person.id}
+          >
             <AvatarSplittingButton
               person={person}
               item={item}
@@ -81,9 +84,9 @@ export const ItemInputCard = ({ itemId }: { itemId: string }) => {
             />
             {typeof item.sharedBy[person.id] === "number" && (
               <Input
-                className="w-14 text-center"
+                className="w-full text-center px-0"
                 type="text"
-                value={item.sharedBy[person.id]}
+                value={item.sharedBy[person.id] as number}
                 onChange={(event) =>
                   changeItemProp(item, "sharedBy", {
                     ...item.sharedBy,

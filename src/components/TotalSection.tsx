@@ -4,6 +4,7 @@ import { Item, useItemsStore } from "@/hooks/useItemsStore";
 import { Person, usePeopleStore } from "@/hooks/usePeopleStore";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Avatar } from "./Avatar";
+import { IntegerInput } from "./IntegerInput";
 
 const addTax = (value: number, tax: number) => {
   return value + (value * tax) / 100;
@@ -18,7 +19,7 @@ const calculateTotalWithTax = (items: Map<string, Item>, tax: number) => {
 };
 
 const calculatedAllTotals = (itemsMap: Map<string, Item>) => {
-  const totals: { [key: string]: any } = {};
+  const totals: { [key: string]: { item: Item; toPay: number }[] } = {};
   itemsMap.forEach((item) => {
     const itemTotal = item.unitPrice * item.quantity;
     const peopleSharing: string[] = [];
@@ -40,7 +41,7 @@ const calculatedAllTotals = (itemsMap: Map<string, Item>) => {
       if (totals[personId] === undefined) totals[personId] = [];
       totals[personId].push({
         item,
-        toPay: item.sharedBy[personId],
+        toPay: item.sharedBy[personId] as number,
       });
     });
     peopleSharing.forEach((personId) => {
@@ -61,7 +62,7 @@ const PersonTotalCard = ({
 }) => {
   const total = personTotals.reduce((prev, curr) => prev + curr.toPay, 0);
   return (
-    <div className="items-center border rounded-lg p-2 shadow-md font-mono">
+    <div className="items-center border rounded-xl bg-white p-2 shadow-md font-mono">
       <div className="font-sans flex gap-2 items-center">
         <Avatar person={person} />
         <span className="font-bold">{person.name || person.defaultName}</span>
@@ -92,22 +93,18 @@ export const TotalSection = () => {
   const totalsPerPerson = calculatedAllTotals(items);
   return (
     <>
-      <h2 className="text-xl font-bold">Total a pagar:</h2>
-      <div className="flex justify-between items-center">
-        <p className="text-right">
-          Serviço:{" "}
-          <Input
-            className="w-16 text-right"
-            type="number"
-            value={tax}
-            onChange={(event) => setTax(Number(event.target.value))}
-          />
-          {"%"}
-        </p>
-        <p className="text-right">
-          Total da conta: {formatCurrency(calculateTotalWithTax(items, tax))}
-        </p>
-      </div>
+      <h2>Total a pagar:</h2>
+      <p className="text-right">
+        Serviço(%):{" "}
+        <IntegerInput
+          value={tax}
+          onChange={(event) => setTax(Number(event.target.value))}
+          buttonsFunction={setTax}
+        />
+      </p>
+      <p className="text-right">
+        Total: {formatCurrency(calculateTotalWithTax(items, tax))}
+      </p>
       {[...people.values()].map((person) => {
         return (
           <PersonTotalCard

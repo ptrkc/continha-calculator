@@ -9,7 +9,7 @@ export const ItemsSection = () => {
   const addItem = useItemsStore((state) => state.addItem);
   return (
     <>
-      <h2 className="text-xl font-bold">Items ({itemIds.length}):</h2>
+      <h2>Items ({itemIds.length}):</h2>
       <ul className="flex flex-col gap-4">
         {itemIds.length ? (
           itemIds.map((itemId) => (
@@ -20,7 +20,7 @@ export const ItemsSection = () => {
         )}
       </ul>
       <Button className="mx-auto" onClick={addItem} icon={<PlusIcon />}>
-        Adicionar Item
+        Item
       </Button>
     </>
   );

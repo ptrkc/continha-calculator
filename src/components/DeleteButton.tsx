@@ -29,13 +29,13 @@ export const DeleteButton = ({ onClick, className }: DeleteButtonType) => {
     <button
       onClick={buttonClick}
       className={cn(
-        "h-8 p-[6px] shrink-0 flex justify-center items-center rounded-lg bg-red-700 font-bold text-white hover:brightness-90 transition-[width]",
+        "h-8 p-[6px] shrink-0 flex justify-center items-center rounded-full bg-red-700 font-bold text-white transition-[width] text-base",
         waitingConfirmation ? "w-24" : "w-8",
         className
       )}
     >
       {waitingConfirmation ? (
-        "CERTEZA?"
+        "DELETAR?"
       ) : (
         <span className="w-5">
           <TrashIcon />
