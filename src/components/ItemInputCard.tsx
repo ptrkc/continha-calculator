@@ -1,6 +1,5 @@
 import { AvatarSplittingButton } from "@/components/Avatar";
-import { IconButton } from "@/components/IconButton";
-import { TrashIcon } from "@/components/Icons";
+import { DeleteButton } from "@/components/DeleteButton";
 import { Input } from "@/components/Input";
 import { usePeopleStore } from "@/hooks/usePeopleStore";
 import { useItemsStore } from "@/hooks/useItemsStore";
@@ -64,11 +63,7 @@ export const ItemInputCard = ({ itemId }: { itemId: string }) => {
           </span>
         </div>
         <div className="whitespace-nowrap flex flex-col items-end">
-          <IconButton
-            className="bg-red-700"
-            onClick={() => deleteItem(item.id)}
-            icon={<TrashIcon />}
-          />
+          <DeleteButton onClick={() => deleteItem(item.id)} />
           <p>Total:</p>
           <p>{formatCurrency(totalPrice)}</p>
         </div>

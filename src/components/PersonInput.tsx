@@ -1,8 +1,7 @@
 import { Avatar } from "@/components/Avatar";
-import { IconButton } from "@/components/IconButton";
 import { Input } from "@/components/Input";
-import { TrashIcon } from "@/components/Icons";
 import { Person } from "@/hooks/usePeopleStore";
+import { DeleteButton } from "@/components/DeleteButton";
 
 export const PersonInput = ({
   person,
@@ -24,11 +23,7 @@ export const PersonInput = ({
           changePersonProp(person, "name", event.target.value.toUpperCase())
         }
       />
-      <IconButton
-        className="bg-red-700"
-        onClick={() => deletePerson(person.id)}
-        icon={<TrashIcon />}
-      />
+      <DeleteButton onClick={() => deletePerson(person.id)} />
     </li>
   );
 };
