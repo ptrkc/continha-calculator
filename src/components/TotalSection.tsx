@@ -1,50 +1,47 @@
-import { useState } from "react";
-import { Input } from "@/components/Input";
-import { Item, useItemsStore } from "@/hooks/useItemsStore";
-import { Person, usePeopleStore } from "@/hooks/usePeopleStore";
-import { formatCurrency } from "@/utils/formatCurrency";
-import { Avatar } from "./Avatar";
-import { IntegerInput } from "./IntegerInput";
+import { useState } from 'react';
+import { Item, useItemsStore } from '@/hooks/useItemsStore';
+import { Person, usePeopleStore } from '@/hooks/usePeopleStore';
+import { formatCurrency } from '@/utils/formatCurrency';
+import { Avatar } from '@/components/Avatar';
+import { IntegerInput } from '@/components/IntegerInput';
 
-const addTax = (value: number, tax: number) => {
-  return value + (value * tax) / 100;
-};
+const addTax = (value: number, tax: number) => value + (value * tax) / 100;
 
 const calculateTotalWithTax = (items: Map<string, Item>, tax: number) => {
   const total = [...items.values()].reduce(
     (prev, curr) => prev + Number(curr.unitPrice) * curr.quantity,
-    0
+    0,
   );
   return Math.ceil(total + (total * tax) / 100);
 };
 
 const calculatedAllTotals = (itemsMap: Map<string, Item>) => {
-  const totals: { [key: string]: { item: Item; toPay: number }[] } = {};
-  itemsMap.forEach((item) => {
+  const totals: Record<string, { item: Item; toPay: number }[]> = {};
+  itemsMap.forEach(item => {
     const itemTotal = item.unitPrice * item.quantity;
     const peopleSharing: string[] = [];
     const peoplePayingCustomValue: string[] = [];
     let totalCustomValue = 0;
-    Object.keys(item.sharedBy).forEach((personId) => {
+    Object.keys(item.sharedBy).forEach(personId => {
       const sharedBy = item.sharedBy[personId];
       if (sharedBy === true) {
         peopleSharing.push(personId);
-      } else if (typeof sharedBy === "number") {
+      } else if (typeof sharedBy === 'number') {
         totalCustomValue += sharedBy;
         peoplePayingCustomValue.push(personId);
       }
     });
     const sharedTotal = Math.ceil(
-      (itemTotal - totalCustomValue) / peopleSharing.length
+      (itemTotal - totalCustomValue) / peopleSharing.length,
     );
-    peoplePayingCustomValue.forEach((personId) => {
+    peoplePayingCustomValue.forEach(personId => {
       if (totals[personId] === undefined) totals[personId] = [];
       totals[personId].push({
         item,
         toPay: item.sharedBy[personId] as number,
       });
     });
-    peopleSharing.forEach((personId) => {
+    peopleSharing.forEach(personId => {
       if (totals[personId] === undefined) totals[personId] = [];
       totals[personId].push({ item, toPay: Math.ceil(sharedTotal) });
     });
@@ -53,13 +50,13 @@ const calculatedAllTotals = (itemsMap: Map<string, Item>) => {
   return totals;
 };
 
-const PersonTotalCard = ({
+function PersonTotalCard({
   person,
   personTotals = [],
 }: {
   person: Person;
   personTotals: { item: Item; toPay: number }[];
-}) => {
+}) {
   const total = personTotals.reduce((prev, curr) => prev + curr.toPay, 0);
   return (
     <div className="items-center border rounded-xl bg-white p-2 shadow-md font-mono">
@@ -84,36 +81,34 @@ const PersonTotalCard = ({
       </p>
     </div>
   );
-};
+}
 
-export const TotalSection = () => {
+export function TotalSection() {
   const [tax, setTax] = useState(10);
-  const items = useItemsStore((state) => state.items);
-  const people = usePeopleStore((state) => state.people);
+  const items = useItemsStore(state => state.items);
+  const people = usePeopleStore(state => state.people);
   const totalsPerPerson = calculatedAllTotals(items);
   return (
     <>
       <h2>Total a pagar:</h2>
       <p className="text-right">
-        Serviço(%):{" "}
+        Serviço(%):{' '}
         <IntegerInput
           value={tax}
-          onChange={(event) => setTax(Number(event.target.value))}
+          onChange={event => setTax(Number(event.target.value))}
           buttonsFunction={setTax}
         />
       </p>
       <p className="text-right">
         Total: {formatCurrency(calculateTotalWithTax(items, tax))}
       </p>
-      {[...people.values()].map((person) => {
-        return (
-          <PersonTotalCard
-            key={person.id}
-            person={person}
-            personTotals={totalsPerPerson[person.id]}
-          />
-        );
-      })}
+      {[...people.values()].map(person => (
+        <PersonTotalCard
+          key={person.id}
+          person={person}
+          personTotals={totalsPerPerson[person.id]}
+        />
+      ))}
     </>
   );
-};
+}

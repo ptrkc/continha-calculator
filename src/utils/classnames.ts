@@ -1,8 +1,7 @@
-export const cn = (...args: Array<String | Boolean | undefined>) => {
+export const cn = (...args: (string | boolean | undefined)[]) => {
   const finalClasses = [];
-  for (let i = 0; i < args.length; i++) {
-    const currentClass = args[i];
+  for (const currentClass of args) {
     if (currentClass) finalClasses.push(currentClass);
   }
-  return finalClasses.join(" ");
+  return finalClasses.join(' ');
 };

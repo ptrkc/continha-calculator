@@ -1,8 +1,8 @@
-import { IconButton } from "./IconButton";
-import { MinusIcon, PlusIcon } from "./Icons";
-import { Input } from "./Input";
+import { IconButton } from './IconButton';
+import { MinusIcon, PlusIcon } from './Icons';
+import { Input } from './Input';
 
-export const IntegerInput = ({
+export function IntegerInput({
   value,
   onChange,
   buttonsFunction,
@@ -10,7 +10,7 @@ export const IntegerInput = ({
   value: number;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   buttonsFunction: (newValue: number) => void;
-}) => {
+}) {
   return (
     <span className="inline-flex w-24 rounded-full border-[1px] border-blue-500">
       <IconButton
@@ -37,4 +37,4 @@ export const IntegerInput = ({
       />
     </span>
   );
-};
+}

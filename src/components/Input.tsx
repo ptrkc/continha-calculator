@@ -1,42 +1,43 @@
-import { useState } from "react";
-import { cn } from "@/utils/classnames";
+import { useState } from 'react';
+import { cn } from '@/utils/classnames';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   value: string | number;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-  format?: Function;
+  onChange: (value: string) => void;
+  format?: (value: string) => string;
 }
 
-export const Input = ({
+export function Input({
   value,
   onChange,
   format,
   className,
   ...rest
-}: InputProps) => {
+}: InputProps) {
   const [internalValue, setInternalValue] = useState(
-    format ? format(value) : value
+    format ? format(value) : value,
   );
   const inputValue = format ? internalValue : value;
 
   const onChangeWithFormat = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (format) {
-      event.target.value = format(event.target.value);
+      const receivedValue = format(event.target.value);
       setInternalValue(event.target.value);
-      return onChange(event);
+      return onChange(receivedValue);
     }
-    onChange(event);
+    return onChange(event.target.value);
   };
 
   return (
     <input
       className={cn(
-        "border border-black bg-white px-2 rounded-full h-8",
-        className
+        'border border-black bg-white px-2 rounded-full h-8',
+        className,
       )}
       value={inputValue}
       onChange={onChangeWithFormat}
       {...rest}
     />
   );
-};
+}

@@ -1,0 +1,57 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/strict",
+    "prettier"
+  ],
+  "overrides": [],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["react", "@typescript-eslint"],
+  "rules": {
+    "import/extensions": 0,
+    "react/react-in-jsx-scope": 0,
+    "import/prefer-default-export": "off",
+    "prefer-const": "error",
+    "@typescript-eslint/naming-convention": 0,
+    "react/require-default-props": 0,
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "radix": 0,
+    "no-underscore-dangle": 0,
+    "no-unused-vars": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "destructuredArrayIgnorePattern": "^_" }
+    ],
+    "react/jsx-props-no-spreading": [
+      1,
+      {
+        "html": "ignore",
+        "exceptions": ["DynamicTag"]
+      }
+    ],
+
+    "indent": "off",
+    "@typescript-eslint/indent": [
+      "error",
+      2,
+      {
+        "ignoredNodes": [
+          "PropertyDefinition[decorators]",
+          "TSUnionType",
+          "TSTypeParameterInstantiation",
+          "TSIntersectionType"
+        ]
+      }
+    ]
+  }
+}

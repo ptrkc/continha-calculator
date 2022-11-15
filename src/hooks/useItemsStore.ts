@@ -1,15 +1,13 @@
-import create from "zustand";
+import create from 'zustand';
 
-export type Item = {
+export interface Item {
   defaultName: string;
   name: string;
   unitPrice: number;
   quantity: number;
   id: string;
-  sharedBy: {
-    [key: string]: boolean | number;
-  };
-};
+  sharedBy: Record<string, boolean | number>;
+}
 
 interface ItemsState {
   _counter: number;
@@ -19,46 +17,23 @@ interface ItemsState {
   changeItemProp: (
     item: Item,
     propKey: string,
-    newValue: string | number | object
+    newValue: string | number | object,
   ) => void;
   shareItem: (itemId: string, personId: string) => void;
   deleteShareRelation: (personId: string) => void;
 }
 
-export const useItemsStore = create<ItemsState>((set) => ({
-  _counter: 1,
-  items: new Map([
-    [
-      "item-1",
-      {
-        defaultName: "ITEM 1",
-        name: "",
-        unitPrice: 0,
-        quantity: 1,
-        id: "item-1",
-        sharedBy: {},
-      },
-    ],
-  ]),
-  deleteItem: (id) => set((state) => _deleteItem(state, id)),
-  addItem: () => set(_addItem),
-  changeItemProp: (item, propKey, newValue) =>
-    set((state) => _changeItemProp(state, item, propKey, newValue)),
-  shareItem: (itemId, personId) =>
-    set((state) => _shareItem(state, itemId, personId)),
-  deleteShareRelation: (personId) =>
-    set((state) => _deleteShareRelation(state, personId)),
-}));
-
 const _shareItem = (state: ItemsState, itemId: string, personId: string) => {
   let newSharingValue: boolean | number = false;
-  const item = state.items.get(itemId)!;
+  const item = state.items.get(itemId);
+  if (!item) return console.log('an error tht should never happen');
+
   const itemShareBy = item.sharedBy[personId];
   if (itemShareBy === undefined || itemShareBy === false) {
     newSharingValue = true;
   } else if (itemShareBy === true) {
     newSharingValue = 0;
-  } else if (typeof itemShareBy === "number") {
+  } else if (typeof itemShareBy === 'number') {
     newSharingValue = false;
   }
   return {
@@ -74,7 +49,8 @@ const _shareItem = (state: ItemsState, itemId: string, personId: string) => {
 
 const _deleteShareRelation = (state: ItemsState, personId: string) => {
   const items = [...state.items];
-  items.forEach(([key, item]) => delete item.sharedBy[personId]);
+  // eslint-disable-next-line no-param-reassign
+  items.forEach(([_, item]) => delete item.sharedBy[personId]);
   return { items: new Map(items) };
 };
 
@@ -89,7 +65,7 @@ const _addItem = (state: ItemsState) => {
         id,
         {
           defaultName: `ITEM ${currentCounter}`,
-          name: "",
+          name: '',
           unitPrice: 0,
           quantity: 1,
           id,
@@ -111,12 +87,36 @@ const _changeItemProp = (
   state: ItemsState,
   item: Item,
   propKey: string,
-  newValue: string | number | object
-) => {
-  return {
-    items: new Map(state.items).set(item.id, {
-      ...item,
-      [propKey]: newValue,
-    }),
-  };
-};
+  newValue: string | number | object,
+) => ({
+  items: new Map(state.items).set(item.id, {
+    ...item,
+    [propKey]: newValue,
+  }),
+});
+
+export const useItemsStore = create<ItemsState>(set => ({
+  _counter: 1,
+  items: new Map([
+    [
+      'item-1',
+      {
+        defaultName: 'ITEM 1',
+        name: '',
+        unitPrice: 0,
+        quantity: 1,
+        id: 'item-1',
+        sharedBy: {},
+      },
+    ],
+  ]),
+  deleteItem: id => set(state => _deleteItem(state, id)),
+  addItem: () => set(_addItem),
+  changeItemProp: (item, propKey, newValue) => {
+    set(state => _changeItemProp(state, item, propKey, newValue));
+  },
+  shareItem: (itemId, personId) =>
+    set(state => _shareItem(state, itemId, personId)),
+  deleteShareRelation: personId =>
+    set(state => _deleteShareRelation(state, personId)),
+}));

@@ -1,15 +1,19 @@
-import shallow from "zustand/shallow";
-import { useItemsStore } from "@/hooks/useItemsStore";
-import { Button } from "./Button";
-import { PlusIcon } from "./Icons";
-import { ItemInputCard } from "@/components/ItemInputCard";
+import shallow from 'zustand/shallow';
+import { useItemsStore } from '@/hooks/useItemsStore';
+import { Button } from './Button';
+import { PlusIcon } from './Icons';
+import { ItemInputCard } from '@/components/ItemInputCard';
 
-export const ItemsSection = () => {
+export function ItemsSection() {
   const itemIds = useItemsStore((state) => [...state.items.keys()], shallow);
   const addItem = useItemsStore((state) => state.addItem);
   return (
     <>
-      <h2>Items ({itemIds.length}):</h2>
+      <h2>
+        Items (
+        {itemIds.length}
+        ):
+      </h2>
       <ul className="flex flex-col gap-4">
         {itemIds.length ? (
           itemIds.map((itemId) => (
@@ -24,4 +28,4 @@ export const ItemsSection = () => {
       </Button>
     </>
   );
-};
+}

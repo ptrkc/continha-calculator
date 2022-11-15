@@ -1,14 +1,15 @@
-import { Button } from "@/components/Button";
-import { PlusIcon } from "@/components/Icons";
-import { PersonInput } from "@/components/PersonInput";
-import { usePeopleStore } from "@/hooks/usePeopleStore";
-import { useItemsStore } from "@/hooks/useItemsStore";
+import { Button } from '@/components/Button';
+import { PlusIcon } from '@/components/Icons';
+import { PersonInput } from '@/components/PersonInput';
+import { usePeopleStore } from '@/hooks/usePeopleStore';
+import { useItemsStore } from '@/hooks/useItemsStore';
 
-export const PeopleSection = () => {
-  const { people, addPerson, changePersonProp, deletePerson } =
-    usePeopleStore();
+export function PeopleSection() {
+  const {
+    people, addPerson, changePersonProp, deletePerson,
+  } = usePeopleStore();
   const deleteShareRelation = useItemsStore(
-    (state) => state.deleteShareRelation
+    (state) => state.deleteShareRelation,
   );
   const deletePersonAndRelation = (id: string) => {
     deletePerson(id);
@@ -17,7 +18,11 @@ export const PeopleSection = () => {
   return (
     <>
       <div className="flex justify-between items-center">
-        <h2>Pessoas ({people.size}):</h2>
+        <h2>
+          Pessoas (
+          {people.size}
+          ):
+        </h2>
         <Button onClick={addPerson} icon={<PlusIcon />}>
           Pessoa
         </Button>
@@ -40,4 +45,4 @@ export const PeopleSection = () => {
       </ul>
     </>
   );
-};
+}

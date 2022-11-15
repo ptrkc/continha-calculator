@@ -1,13 +1,13 @@
-import { AvatarSplittingButton } from "@/components/Avatar";
-import { DeleteButton } from "@/components/DeleteButton";
-import { Input } from "@/components/Input";
-import { usePeopleStore } from "@/hooks/usePeopleStore";
-import { useItemsStore } from "@/hooks/useItemsStore";
-import { currencyInput } from "@/utils/currencyInput";
-import { formatCurrency } from "@/utils/formatCurrency";
-import { IntegerInput } from "./IntegerInput";
+import { AvatarSplittingButton } from '@/components/Avatar';
+import { DeleteButton } from '@/components/DeleteButton';
+import { Input } from '@/components/Input';
+import { usePeopleStore } from '@/hooks/usePeopleStore';
+import { useItemsStore } from '@/hooks/useItemsStore';
+import { currencyInput } from '@/utils/currencyInput';
+import { formatCurrency } from '@/utils/formatCurrency';
+import { IntegerInput } from './IntegerInput';
 
-export const ItemInputCard = ({ itemId }: { itemId: string }) => {
+export function ItemInputCard({ itemId }: { itemId: string }) {
   const item = useItemsStore((state) => state.items.get(itemId))!;
   const { changeItemProp, deleteItem, shareItem } = useItemsStore((state) => ({
     changeItemProp: state.changeItemProp,
@@ -27,40 +27,33 @@ export const ItemInputCard = ({ itemId }: { itemId: string }) => {
             className="w-full"
             placeholder={item.defaultName}
             value={item.name}
-            onChange={(event) =>
-              changeItemProp(item, "name", event.target.value.toUpperCase())
-            }
+            onChange={(value) => changeItemProp(item, 'name', value.toUpperCase())}
           />
           <DeleteButton onClick={() => deleteItem(item.id)} />
         </div>
         <div>
-          Preço un.: R${" "}
+          Preço unitário: R$
+          {' '}
           <Input
             className="w-20 text-right"
             maxLength={11}
             inputMode="numeric"
             placeholder="0,00"
             value={item.unitPrice}
-            onChange={(event) =>
-              changeItemProp(
-                item,
-                "unitPrice",
-                currencyInput.toCents(event.target.value)
-              )
-            }
+            onChange={(value) => changeItemProp(
+              item,
+              'unitPrice',
+              currencyInput.toCents(value),
+            )}
             format={currencyInput.format}
           />
         </div>
         <div>
-          <span>Qtd.: </span>
+          <span>Quantidade: </span>
           <IntegerInput
             value={item.quantity}
-            onChange={(event) =>
-              changeItemProp(item, "quantity", Number(event.target.value))
-            }
-            buttonsFunction={(newValue) =>
-              changeItemProp(item, "quantity", newValue)
-            }
+            onChange={(event) => changeItemProp(item, 'quantity', Number(event.target.value))}
+            buttonsFunction={(newValue) => changeItemProp(item, 'quantity', newValue)}
           />
         </div>
         <div className="whitespace-nowrap">
@@ -82,17 +75,15 @@ export const ItemInputCard = ({ itemId }: { itemId: string }) => {
                 shareItem(item.id, person.id);
               }}
             />
-            {typeof item.sharedBy[person.id] === "number" && (
+            {typeof item.sharedBy[person.id] === 'number' && (
               <Input
                 className="w-full text-center px-0"
                 type="text"
                 value={item.sharedBy[person.id] as number}
-                onChange={(event) =>
-                  changeItemProp(item, "sharedBy", {
-                    ...item.sharedBy,
-                    [person.id]: currencyInput.toCents(event.target.value),
-                  })
-                }
+                onChange={(value) => changeItemProp(item, 'sharedBy', {
+                  ...item.sharedBy,
+                  [person.id]: currencyInput.toCents(value),
+                })}
                 format={currencyInput.format}
                 inputMode="numeric"
                 placeholder="0,00"
@@ -103,4 +94,4 @@ export const ItemInputCard = ({ itemId }: { itemId: string }) => {
       </div>
     </li>
   );
-};
+}

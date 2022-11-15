@@ -1,27 +1,28 @@
-import { ReactNode } from "react";
-import { cn } from "@/utils/classnames";
+import { ReactNode } from 'react';
+import { cn } from '@/utils/classnames';
 
 type ButtonType = React.DetailedHTMLProps<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  HTMLButtonElement
+React.ButtonHTMLAttributes<HTMLButtonElement>,
+HTMLButtonElement
 > & {
   icon?: ReactNode;
 };
 
-export const Button = ({
+export function Button({
   children,
   onClick,
   className,
   icon,
   ...rest
-}: ButtonType) => {
+}: ButtonType) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={cn(
-        "flex justify-center items-center rounded-full bg-blue-500 font-bold text-white px-3 py-1",
-        icon ? "pl-0 pr-3" : "px-2",
-        className
+        'flex justify-center items-center rounded-full bg-blue-500 font-bold text-white px-3 py-1',
+        icon ? 'pl-0 pr-3' : 'px-2',
+        className,
       )}
       {...rest}
     >
@@ -29,4 +30,4 @@ export const Button = ({
       <span>{children}</span>
     </button>
   );
-};
+}
