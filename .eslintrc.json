@@ -16,6 +16,7 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
+  "ignorePatterns": ["*.config.*"],
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
     "import/extensions": 0,

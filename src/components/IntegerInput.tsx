@@ -1,6 +1,6 @@
-import { IconButton } from './IconButton';
-import { MinusIcon, PlusIcon } from './Icons';
-import { Input } from './Input';
+import { IconButton } from '@/components/IconButton';
+import { MinusIcon, PlusIcon } from '@/components/Icons';
+import { Input } from '@/components/Input';
 
 export function IntegerInput({
   value,
@@ -8,7 +8,7 @@ export function IntegerInput({
   buttonsFunction,
 }: {
   value: number;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onChange: (value: string) => void;
   buttonsFunction: (newValue: number) => void;
 }) {
   return (

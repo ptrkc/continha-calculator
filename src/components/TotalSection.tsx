@@ -15,8 +15,8 @@ const calculateTotalWithTax = (items: Map<string, Item>, tax: number) => {
   return Math.ceil(total + (total * tax) / 100);
 };
 
-const calculatedAllTotals = (itemsMap: Map<string, Item>) => {
-  const totals: Record<string, { item: Item; toPay: number }[]> = {};
+const calculateAllTotals = (itemsMap: Map<string, Item>) => {
+  const totals: Partial<Record<string, { item: Item; toPay: number }[]>> = {};
   itemsMap.forEach(item => {
     const itemTotal = item.unitPrice * item.quantity;
     const peopleSharing: string[] = [];
@@ -36,14 +36,14 @@ const calculatedAllTotals = (itemsMap: Map<string, Item>) => {
     );
     peoplePayingCustomValue.forEach(personId => {
       if (totals[personId] === undefined) totals[personId] = [];
-      totals[personId].push({
+      totals[personId]?.push({
         item,
         toPay: item.sharedBy[personId] as number,
       });
     });
     peopleSharing.forEach(personId => {
       if (totals[personId] === undefined) totals[personId] = [];
-      totals[personId].push({ item, toPay: Math.ceil(sharedTotal) });
+      totals[personId]?.push({ item, toPay: Math.ceil(sharedTotal) });
     });
   });
 
@@ -52,7 +52,7 @@ const calculatedAllTotals = (itemsMap: Map<string, Item>) => {
 
 function PersonTotalCard({
   person,
-  personTotals = [],
+  personTotals,
 }: {
   person: Person;
   personTotals: { item: Item; toPay: number }[];
@@ -87,7 +87,7 @@ export function TotalSection() {
   const [tax, setTax] = useState(10);
   const items = useItemsStore(state => state.items);
   const people = usePeopleStore(state => state.people);
-  const totalsPerPerson = calculatedAllTotals(items);
+  const totalsPerPerson = calculateAllTotals(items);
   return (
     <>
       <h2>Total a pagar:</h2>
@@ -95,20 +95,23 @@ export function TotalSection() {
         Serviço(%):{' '}
         <IntegerInput
           value={tax}
-          onChange={event => setTax(Number(event.target.value))}
+          onChange={value => setTax(Number(value))}
           buttonsFunction={setTax}
         />
       </p>
       <p className="text-right">
         Total: {formatCurrency(calculateTotalWithTax(items, tax))}
       </p>
-      {[...people.values()].map(person => (
-        <PersonTotalCard
-          key={person.id}
-          person={person}
-          personTotals={totalsPerPerson[person.id]}
-        />
-      ))}
+      {[...people.values()].map(person => {
+        const personTotals = totalsPerPerson[person.id] ?? [];
+        return (
+          <PersonTotalCard
+            key={person.id}
+            person={person}
+            personTotals={personTotals}
+          />
+        );
+      })}
     </>
   );
 }

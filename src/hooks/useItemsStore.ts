@@ -6,7 +6,7 @@ export interface Item {
   unitPrice: number;
   quantity: number;
   id: string;
-  sharedBy: Record<string, boolean | number>;
+  sharedBy: Partial<Record<string, boolean | number>>;
 }
 
 interface ItemsState {
@@ -26,7 +26,10 @@ interface ItemsState {
 const _shareItem = (state: ItemsState, itemId: string, personId: string) => {
   let newSharingValue: boolean | number = false;
   const item = state.items.get(itemId);
-  if (!item) return console.log('an error tht should never happen');
+  if (!item) {
+    console.log('an error that should never happen');
+    return state;
+  }
 
   const itemShareBy = item.sharedBy[personId];
   if (itemShareBy === undefined || itemShareBy === false) {
@@ -49,8 +52,7 @@ const _shareItem = (state: ItemsState, itemId: string, personId: string) => {
 
 const _deleteShareRelation = (state: ItemsState, personId: string) => {
   const items = [...state.items];
-  // eslint-disable-next-line no-param-reassign
-  items.forEach(([_, item]) => delete item.sharedBy[personId]);
+  items.forEach(([_, item]) => (item.sharedBy[personId] = false));
   return { items: new Map(items) };
 };
 

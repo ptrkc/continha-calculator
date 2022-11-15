@@ -1,8 +1,8 @@
-import { MouseEventHandler } from 'react';
 import styles from './Avatar.module.css';
+import { MouseEventHandler } from 'react';
+import { Item } from '@/hooks/useItemsStore';
 import { Person } from '@/hooks/usePeopleStore';
 import { cn } from '@/utils/classnames';
-import { Item } from '@/hooks/useItemsStore';
 
 const chooseVariant = (person: Person, item: Item) => {
   if (item.sharedBy[person.id] === true) return 'solid';

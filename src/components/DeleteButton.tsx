@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { cn } from '@/utils/classnames';
 import { TrashIcon } from '@/components/Icons';
+import { cn } from '@/utils/classnames';
 
 type DeleteButtonType = Omit<
   React.DetailedHTMLProps<

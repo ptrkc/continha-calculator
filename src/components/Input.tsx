@@ -5,7 +5,7 @@ interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   value: string | number;
   onChange: (value: string) => void;
-  format?: (value: string) => string;
+  format?: (value: string | number) => string;
 }
 
 export function Input({
