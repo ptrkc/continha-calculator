@@ -72,8 +72,8 @@ const _deletePerson = (state: PeopleState, id: string) => {
   };
 };
 
-export const usePeopleStore = create<PeopleState>((set) => ({
-  _counter: 1,
+export const usePeopleStore = create<PeopleState>(set => ({
+  _counter: 2,
   people: new Map([
     [
       'person-1',
@@ -84,10 +84,19 @@ export const usePeopleStore = create<PeopleState>((set) => ({
         id: 'person-1',
       },
     ],
+    [
+      'person-2',
+      {
+        defaultName: 'PESSOA 2',
+        name: '',
+        color: COLORS[1],
+        id: 'person-2',
+      },
+    ],
   ]),
-  deletePerson: (id) => set((state) => _deletePerson(state, id)),
+  deletePerson: id => set(state => _deletePerson(state, id)),
   addPerson: () => set(_addPerson),
   changePersonProp: (person, propKey, newValue) => {
-    set((state) => _changePersonProp(state, person, propKey, newValue));
+    set(state => _changePersonProp(state, person, propKey, newValue));
   },
 }));
