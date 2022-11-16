@@ -9,7 +9,7 @@ export interface Item {
   sharedBy: Partial<Record<string, boolean | number>>;
 }
 
-interface ItemsState {
+export interface ItemsState {
   _counter: number;
   items: Map<string, Item>;
   deleteItem: (id: string) => void;
@@ -27,7 +27,7 @@ const _shareItem = (state: ItemsState, itemId: string, personId: string) => {
   let newSharingValue: boolean | number = false;
   const item = state.items.get(itemId);
   if (!item) {
-    console.log('an error that should never happen');
+    console.log("received an itemId that doesn't exist, shouldn't happen");
     return state;
   }
 

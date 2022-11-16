@@ -20,7 +20,7 @@ const COLORS = [
   'fuchsia',
 ];
 
-interface PeopleState {
+export interface PeopleState {
   _counter: number;
   people: Map<string, Person>;
   deletePerson: (id: string) => void;

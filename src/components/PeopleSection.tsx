@@ -1,16 +1,25 @@
+import shallow from 'zustand/shallow';
 import { Button } from '@/components/Button';
 import { PlusIcon } from '@/components/Icons';
 import { PersonInput } from '@/components/PersonInput';
-import { usePeopleStore } from '@/hooks/usePeopleStore';
-import { useItemsStore } from '@/hooks/useItemsStore';
+import { PeopleState, usePeopleStore } from '@/hooks/usePeopleStore';
+import { ItemsState, useItemsStore } from '@/hooks/useItemsStore';
 
+const peopleKeysSelector = (state: PeopleState) => [...state.people.keys()];
+const peopleFunctionsSelector = (state: PeopleState) => ({
+  addPerson: state.addPerson,
+  changePersonProp: state.changePersonProp,
+  deletePerson: state.deletePerson,
+});
+
+const deleteRelationSelector = (state: ItemsState) => state.deleteShareRelation;
 export function PeopleSection() {
-  const {
-    people, addPerson, changePersonProp, deletePerson,
-  } = usePeopleStore();
-  const deleteShareRelation = useItemsStore(
-    (state) => state.deleteShareRelation,
+  const peopleKeys = usePeopleStore(peopleKeysSelector, shallow);
+  const { addPerson, changePersonProp, deletePerson } = usePeopleStore(
+    peopleFunctionsSelector,
+    shallow,
   );
+  const deleteShareRelation = useItemsStore(deleteRelationSelector, shallow);
   const deletePersonAndRelation = (id: string) => {
     deletePerson(id);
     deleteShareRelation(id);
@@ -19,8 +28,7 @@ export function PeopleSection() {
     <>
       <div className="flex justify-between items-center">
         <h2>
-          Pessoas (
-          {people.size}
+          Pessoas ({peopleKeys.length}
           ):
         </h2>
         <Button onClick={addPerson} icon={<PlusIcon />}>
@@ -28,11 +36,11 @@ export function PeopleSection() {
         </Button>
       </div>
       <ul className="flex flex-col gap-4">
-        {people.size ? (
-          [...people.values()].map((person) => (
+        {peopleKeys.length ? (
+          peopleKeys.map(personId => (
             <PersonInput
-              key={person.id}
-              person={person}
+              key={personId}
+              personId={personId}
               changePersonProp={changePersonProp}
               deletePerson={deletePersonAndRelation}
             />

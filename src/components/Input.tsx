@@ -23,7 +23,7 @@ export function Input({
   const onChangeWithFormat = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (format) {
       const receivedValue = format(event.target.value);
-      setInternalValue(event.target.value);
+      setInternalValue(receivedValue);
       return onChange(receivedValue);
     }
     return onChange(event.target.value);

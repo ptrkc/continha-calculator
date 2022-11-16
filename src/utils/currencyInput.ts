@@ -1,13 +1,17 @@
-const format = (initalValue: string | number) => {
-  const value = String(initalValue);
-  if (value === '0' || value === '') return '';
-  if (value === String(parseInt(value))) return value;
+import { centsToDecimal } from '@/utils/centsToDecimal';
 
-  const [int, dec] = value
-    .replace('.', ',')
-    .replace(/[^\d,]/g, '')
-    .split(',');
-  return `${int},${dec.slice(0, 2)}`;
+const format = (initialValue: string | number) => {
+  if (typeof initialValue === 'number') {
+    if (initialValue === 0) return '';
+    return centsToDecimal(initialValue);
+  }
+  const matches =
+    initialValue
+      .replace('.', ',')
+      .replace(/\^d\,/g, '')
+      .match(/(\d+)?(\,)?(\d{1,2})?/) ?? []; // should always return on any string but TS complains
+  const [, int = '', comma = '', dec = ''] = matches;
+  return `${int}${comma}${dec}`;
 };
 
 const toCents = (value: string) => {
@@ -15,9 +19,7 @@ const toCents = (value: string) => {
 
   if (value === String(parseInt(value))) return Number(`${value}00`);
 
-  const [int, dec] = value.split(',');
-  if (dec === '') return Number(`${int}00`);
-
+  const [int, dec = ''] = value.split(',');
   return Number(`${int}${dec.padEnd(2, '0')}`);
 };
 

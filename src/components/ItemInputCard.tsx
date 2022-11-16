@@ -1,27 +1,35 @@
+import { useCallback } from 'react';
+import shallow from 'zustand/shallow';
 import { AvatarSplittingButton } from '@/components/Avatar';
 import { DeleteButton } from '@/components/DeleteButton';
 import { Input } from '@/components/Input';
 import { IntegerInput } from '@/components/IntegerInput';
-import { useItemsStore } from '@/hooks/useItemsStore';
-import { usePeopleStore } from '@/hooks/usePeopleStore';
+import { ItemsState, useItemsStore } from '@/hooks/useItemsStore';
+import { PeopleState, usePeopleStore } from '@/hooks/usePeopleStore';
 import { currencyInput } from '@/utils/currencyInput';
-import { formatCurrency } from '@/utils/formatCurrency';
+import { centsToDecimal } from '@/utils/centsToDecimal';
+
+const peopleSelector = (state: PeopleState) => [...state.people.values()];
+const itemFunctionsSelector = (state: ItemsState) => ({
+  changeItemProp: state.changeItemProp,
+  deleteItem: state.deleteItem,
+  shareItem: state.shareItem,
+});
 
 export function ItemInputCard({ itemId }: { itemId: string }) {
-  const item = useItemsStore(state => state.items.get(itemId));
+  const item = useItemsStore(
+    useCallback(state => state.items.get(itemId), [itemId]),
+    shallow,
+  );
   if (!item) {
-    console.log('an error that should never happen');
+    console.log("received an itemId that doesn't exist, shouldn't happen");
     return null;
   }
-
-  const { changeItemProp, deleteItem, shareItem } = useItemsStore(state => ({
-    changeItemProp: state.changeItemProp,
-    deleteItem: state.deleteItem,
-    shareItem: state.shareItem,
-  }));
-  const { people } = usePeopleStore(state => ({
-    people: state.people,
-  }));
+  const { changeItemProp, deleteItem, shareItem } = useItemsStore(
+    itemFunctionsSelector,
+    shallow,
+  );
+  const people = usePeopleStore(peopleSelector, shallow);
 
   const totalPrice = item.unitPrice * item.quantity;
   return (
@@ -64,7 +72,7 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
         </div>
         <div className="whitespace-nowrap">
           <span>Total: </span>
-          <span>{formatCurrency(totalPrice)}</span>
+          <span>R$ {centsToDecimal(totalPrice)}</span>
         </div>
       </div>
       <div className="py-2 flex flex-wrap gap-y-2 justify-around">

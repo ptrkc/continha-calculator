@@ -1,12 +1,14 @@
 import shallow from 'zustand/shallow';
-import { useItemsStore } from '@/hooks/useItemsStore';
+import { ItemsState, useItemsStore } from '@/hooks/useItemsStore';
 import { Button } from '@/components/Button';
 import { PlusIcon } from '@/components/Icons';
 import { ItemInputCard } from '@/components/ItemInputCard';
 
+const itemKeysSelector = (state: ItemsState) => [...state.items.keys()];
+const addItemSelector = (state: ItemsState) => state.addItem;
 export function ItemsSection() {
-  const itemIds = useItemsStore(state => [...state.items.keys()], shallow);
-  const addItem = useItemsStore(state => state.addItem);
+  const itemIds = useItemsStore(itemKeysSelector, shallow);
+  const addItem = useItemsStore(addItemSelector, shallow);
   return (
     <>
       <h2>

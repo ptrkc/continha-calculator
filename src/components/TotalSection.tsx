@@ -1,13 +1,14 @@
 import { useState } from 'react';
+import shallow from 'zustand/shallow';
 import { Avatar } from '@/components/Avatar';
 import { IntegerInput } from '@/components/IntegerInput';
-import { Item, useItemsStore } from '@/hooks/useItemsStore';
-import { Person, usePeopleStore } from '@/hooks/usePeopleStore';
-import { formatCurrency } from '@/utils/formatCurrency';
+import { Item, ItemsState, useItemsStore } from '@/hooks/useItemsStore';
+import { PeopleState, Person, usePeopleStore } from '@/hooks/usePeopleStore';
+import { centsToDecimal } from '@/utils/centsToDecimal';
 
 const addTax = (value: number, tax: number) => value + (value * tax) / 100;
 
-const calculateTotalWithTax = (items: Map<string, Item>, tax: number) => {
+const calculateTotalWithTax = (items: Item[], tax: number) => {
   const total = [...items.values()].reduce(
     (prev, curr) => prev + Number(curr.unitPrice) * curr.quantity,
     0,
@@ -15,9 +16,9 @@ const calculateTotalWithTax = (items: Map<string, Item>, tax: number) => {
   return Math.ceil(total + (total * tax) / 100);
 };
 
-const calculateAllTotals = (itemsMap: Map<string, Item>) => {
+const calculateAllTotals = (itemsArray: Item[]) => {
   const totals: Partial<Record<string, { item: Item; toPay: number }[]>> = {};
-  itemsMap.forEach(item => {
+  itemsArray.forEach(item => {
     const itemTotal = item.unitPrice * item.quantity;
     const peopleSharing: string[] = [];
     const peoplePayingCustomValue: string[] = [];
@@ -69,24 +70,27 @@ function PersonTotalCard({
           <p className="flex items-center whitespace-nowrap" key={item.id}>
             <span>{item.name || item.defaultName}</span>
             <span className="mx-2 h-[1px] bg-current w-full flex justify-center" />
-            <span>{formatCurrency(toPay)}</span>
+            <span>R$ {centsToDecimal(toPay)}</span>
           </p>
         ))}
       </div>
       <p className="text-right">
-        Serviço: {formatCurrency(Math.ceil((total * 10) / 100))}
+        Serviço: R$ {centsToDecimal(Math.ceil((total * 10) / 100))}
       </p>
       <p className="text-right font-bold">
-        Total: {formatCurrency(addTax(total, 10))}
+        Total: R$ {centsToDecimal(addTax(total, 10))}
       </p>
     </div>
   );
 }
 
+const itemsSelector = (state: ItemsState) => [...state.items.values()];
+const peopleSelector = (state: PeopleState) => [...state.people.values()];
+
 export function TotalSection() {
   const [tax, setTax] = useState(10);
-  const items = useItemsStore(state => state.items);
-  const people = usePeopleStore(state => state.people);
+  const items = useItemsStore(itemsSelector, shallow);
+  const people = usePeopleStore(peopleSelector, shallow);
   const totalsPerPerson = calculateAllTotals(items);
   return (
     <>
@@ -100,9 +104,9 @@ export function TotalSection() {
         />
       </p>
       <p className="text-right">
-        Total: {formatCurrency(calculateTotalWithTax(items, tax))}
+        Total: R$ {centsToDecimal(calculateTotalWithTax(items, tax))}
       </p>
-      {[...people.values()].map(person => {
+      {people.map(person => {
         const personTotals = totalsPerPerson[person.id] ?? [];
         return (
           <PersonTotalCard
