@@ -30,7 +30,7 @@ export function DeleteButton({ onClick, className }: DeleteButtonType) {
       type="button"
       onClick={buttonClick}
       className={cn(
-        'h-8 p-[6px] shrink-0 flex justify-center items-center rounded-full bg-red-700 font-bold text-white transition-[width] text-base',
+        'h-8 p-[6px] shrink-0 flex justify-center items-center rounded-full bg-red-700 font-bold text-white transition-[width] duration-[.3s] text-base overflow-hidden',
         waitingConfirmation ? 'w-24' : 'w-8',
         className,
       )}

@@ -1,18 +1,17 @@
-import { PeopleSection } from '@/components/PeopleSection';
+import { Footer } from '@/components/Footer';
+import { Header } from '@/components/Header';
 import { ItemsSection } from '@/components/ItemsSection';
+import { PeopleSection } from '@/components/PeopleSection';
 import { TotalSection } from '@/components/TotalSection';
 
 export function HomePage() {
   return (
-    <div>
-      <div className="flex flex-col gap-4 mx-auto max-w-2xl p-2">
-        <h1 className="py-2 px-4 mb-2 mx-auto text-center bg-gradient-to-r from-fuchsia-500 to-cyan-500 text-white rounded-full">
-          ContinhaCalculator
-        </h1>
-        <PeopleSection />
-        <ItemsSection />
-        <TotalSection />
-      </div>
+    <div className="flex flex-col gap-4 mx-auto max-w-2xl p-2">
+      <Header />
+      <PeopleSection />
+      <ItemsSection />
+      <TotalSection />
+      <Footer />
     </div>
   );
 }
