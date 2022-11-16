@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { Avatar } from '@/components/Avatar';
+import { IntegerInput } from '@/components/IntegerInput';
 import { Item, useItemsStore } from '@/hooks/useItemsStore';
 import { Person, usePeopleStore } from '@/hooks/usePeopleStore';
 import { formatCurrency } from '@/utils/formatCurrency';
-import { Avatar } from '@/components/Avatar';
-import { IntegerInput } from '@/components/IntegerInput';
 
 const addTax = (value: number, tax: number) => value + (value * tax) / 100;
 

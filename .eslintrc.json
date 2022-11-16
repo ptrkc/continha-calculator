@@ -16,18 +16,23 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "ignorePatterns": ["*.config.*"],
+  "ignorePatterns": ["*.config.*", "dist/*"],
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
     "import/extensions": 0,
     "react/react-in-jsx-scope": 0,
     "import/prefer-default-export": "off",
-    "prefer-const": "error",
+    // "prefer-const": "error",
+    "react/function-component-definition": [
+      2,
+      { "namedComponents": "function-declaration" }
+    ],
     "@typescript-eslint/naming-convention": 0,
     "react/require-default-props": 0,
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "radix": 0,
     "no-underscore-dangle": 0,
+    "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
     "no-unused-vars": 0,
     "@typescript-eslint/no-unused-vars": [
       "error",

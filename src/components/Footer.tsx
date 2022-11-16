@@ -1,4 +1,4 @@
-export const Footer = () => {
+export function Footer() {
   return (
     <footer className="mt-8">
       <p className="text-center text-gray-400 text-sm">
@@ -9,4 +9,4 @@ export const Footer = () => {
       </p>
     </footer>
   );
-};
+}
