@@ -25,7 +25,7 @@ export function PeopleSection() {
     deleteShareRelation(id);
   };
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h2>
           Pessoas ({peopleKeys.length}
@@ -51,6 +51,6 @@ export function PeopleSection() {
           </p>
         )}
       </ul>
-    </>
+    </div>
   );
 }

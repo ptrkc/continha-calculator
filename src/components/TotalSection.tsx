@@ -1,64 +1,92 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import shallow from 'zustand/shallow';
 import { Avatar } from '@/components/Avatar';
 import { IntegerInput } from '@/components/IntegerInput';
 import { Item, ItemsState, useItemsStore } from '@/hooks/useItemsStore';
-import { PeopleState, Person, usePeopleStore } from '@/hooks/usePeopleStore';
+import { PeopleState, usePeopleStore } from '@/hooks/usePeopleStore';
 import { centsToDecimal } from '@/utils/centsToDecimal';
 
-const addTax = (value: number, tax: number) => value + (value * tax) / 100;
+const addTax = (value: number, tax: number) =>
+  Math.ceil(value + (value * tax) / 100);
 
-const calculateTotalWithTax = (items: Item[], tax: number) => {
-  const total = [...items.values()].reduce(
+const calculateTotal = (items: Item[]) => {
+  return [...items.values()].reduce(
     (prev, curr) => prev + Number(curr.unitPrice) * curr.quantity,
     0,
   );
-  return Math.ceil(total + (total * tax) / 100);
 };
 
-const calculateAllTotals = (itemsArray: Item[]) => {
-  const totals: Partial<Record<string, { item: Item; toPay: number }[]>> = {};
+const calculateTotalsPerPerson = (peopleIds: string[], itemsArray: Item[]) => {
+  const totalsPerPerson: Record<
+    string,
+    {
+      personId: string;
+      totalToPay: number;
+      items: { item: Item; toPay: number }[];
+    }
+  > = peopleIds.reduce(
+    (acc, personId) => ({
+      ...acc,
+      [personId]: {
+        personId: personId,
+        totalToPay: 0,
+        items: [],
+      },
+    }),
+    {},
+  );
   itemsArray.forEach(item => {
     const itemTotal = item.unitPrice * item.quantity;
     const peopleSharing: string[] = [];
-    const peoplePayingCustomValue: string[] = [];
     let totalCustomValue = 0;
     Object.keys(item.sharedBy).forEach(personId => {
       const sharedBy = item.sharedBy[personId];
       if (sharedBy === true) {
         peopleSharing.push(personId);
       } else if (typeof sharedBy === 'number') {
+        totalsPerPerson[personId].items.push({
+          item,
+          toPay: sharedBy,
+        });
+        totalsPerPerson[personId].totalToPay += sharedBy;
         totalCustomValue += sharedBy;
-        peoplePayingCustomValue.push(personId);
       }
     });
     const sharedTotal = Math.ceil(
       (itemTotal - totalCustomValue) / peopleSharing.length,
     );
-    peoplePayingCustomValue.forEach(personId => {
-      if (totals[personId] === undefined) totals[personId] = [];
-      totals[personId]?.push({
-        item,
-        toPay: item.sharedBy[personId] as number,
-      });
-    });
     peopleSharing.forEach(personId => {
-      if (totals[personId] === undefined) totals[personId] = [];
-      totals[personId]?.push({ item, toPay: Math.ceil(sharedTotal) });
+      totalsPerPerson[personId].items.push({
+        item,
+        toPay: sharedTotal,
+      });
+      totalsPerPerson[personId].totalToPay += sharedTotal;
     });
   });
 
-  return totals;
+  return totalsPerPerson;
 };
 
 function PersonTotalCard({
-  person,
   personTotals,
+  tax,
 }: {
-  person: Person;
-  personTotals: { item: Item; toPay: number }[];
+  personTotals: {
+    personId: string;
+    totalToPay: number;
+    items: { item: Item; toPay: number }[];
+  };
+  tax: number;
 }) {
-  const total = personTotals.reduce((prev, curr) => prev + curr.toPay, 0);
+  const { items, totalToPay, personId } = personTotals;
+  const person = usePeopleStore(
+    useCallback(state => state.people.get(personId), [personId]),
+    shallow,
+  );
+  if (!person) {
+    console.log("received a personId that doesn't exist, shouldn't happen");
+    return null;
+  }
   return (
     <div className="items-center border rounded-xl bg-white p-2 shadow-md font-mono">
       <div className="font-sans flex gap-2 items-center">
@@ -66,56 +94,82 @@ function PersonTotalCard({
         <span className="font-bold">{person.name || person.defaultName}</span>
       </div>
       <div className="py-2">
-        {personTotals.map(({ item, toPay }) => (
-          <p className="flex items-center whitespace-nowrap" key={item.id}>
-            <span>{item.name || item.defaultName}</span>
-            <span className="mx-2 h-[1px] bg-current w-full flex justify-center" />
-            <span>R$ {centsToDecimal(toPay)}</span>
+        {items.map(({ item, toPay }) => (
+          <p
+            className="flex items-center justify-between overflow-hidden"
+            key={item.id}
+          >
+            <span className="whitespace-nowrap text-ellipsis overflow-hidden">
+              {item.name || item.defaultName}
+            </span>
+            <span className="grow mx-2 h-[1px] bg-current min-w-[20px]" />
+            <span className="whitespace-nowrap">
+              R$ {centsToDecimal(toPay)}
+            </span>
           </p>
         ))}
       </div>
-      <p className="text-right">
-        Serviço: R$ {centsToDecimal(Math.ceil((total * 10) / 100))}
-      </p>
+      <p className="text-right">Total: R$ {centsToDecimal(totalToPay)}</p>
       <p className="text-right font-bold">
-        Total: R$ {centsToDecimal(addTax(total, 10))}
+        Total + {tax}%: R$ {centsToDecimal(addTax(totalToPay, tax))}
       </p>
     </div>
   );
 }
 
 const itemsSelector = (state: ItemsState) => [...state.items.values()];
-const peopleSelector = (state: PeopleState) => [...state.people.values()];
+const peopleSelector = (state: PeopleState) => [...state.people.keys()];
+
+const calculateAmountAssigned = (
+  totalsPerPerson: ReturnType<typeof calculateTotalsPerPerson>,
+) => {
+  const people = Object.values(totalsPerPerson);
+  return people.reduce((prev, curr) => prev + curr.totalToPay, 0);
+};
 
 export function TotalSection() {
   const [tax, setTax] = useState(10);
   const items = useItemsStore(itemsSelector, shallow);
-  const people = usePeopleStore(peopleSelector, shallow);
-  const totalsPerPerson = calculateAllTotals(items);
+  const peopleIds = usePeopleStore(peopleSelector, shallow);
+  const totalWithoutTax = calculateTotal(items);
+  const totalWithTax = addTax(calculateTotal(items), tax);
+  const totalsPerPerson = calculateTotalsPerPerson(peopleIds, items);
+  const amountAssignedWithTax = addTax(
+    calculateAmountAssigned(totalsPerPerson),
+    tax,
+  );
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <h2>Total a pagar:</h2>
-      <p className="text-right">
-        Serviço(%):{' '}
-        <IntegerInput
-          value={tax}
-          onChange={value => setTax(Number(value))}
-          buttonsFunction={setTax}
-        />
-      </p>
-      <p className="text-right">
-        Total: R$ {centsToDecimal(calculateTotalWithTax(items, tax))}
-      </p>
-      {people.map(person => {
-        const personTotals = totalsPerPerson[person.id] ?? [];
-        return (
-          <PersonTotalCard
-            key={person.id}
-            person={person}
-            personTotals={personTotals}
+      <div className="flex flex-col items-end gap-2">
+        <p>Total: R$ {centsToDecimal(totalWithoutTax)}</p>
+        <p className="flex justify-end items-center gap-2">
+          Taxa de serviço (%):{' '}
+          <IntegerInput
+            value={tax}
+            onChange={value => setTax(Number(value))}
+            buttonsFunction={setTax}
           />
-        );
-      })}
-    </>
+        </p>
+        <p className="font-bold ">
+          Total + {tax}%: R$ {centsToDecimal(totalWithTax)}
+        </p>
+        {totalWithTax > amountAssignedWithTax && (
+          <p className="font-bold  text-red-600">
+            Falta dividir: R${' '}
+            {centsToDecimal(totalWithTax - amountAssignedWithTax)}
+          </p>
+        )}
+      </div>
+      <div className="flex flex-col gap-4">
+        {[...Object.values(totalsPerPerson)].map(personTotals => (
+          <PersonTotalCard
+            key={personTotals.personId}
+            personTotals={personTotals}
+            tax={tax}
+          />
+        ))}
+      </div>
+    </div>
   );
 }

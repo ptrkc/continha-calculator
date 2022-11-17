@@ -10,7 +10,7 @@ export function ItemsSection() {
   const itemIds = useItemsStore(itemKeysSelector, shallow);
   const addItem = useItemsStore(addItemSelector, shallow);
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <h2>
         Items ({itemIds.length}
         ):
@@ -25,6 +25,6 @@ export function ItemsSection() {
       <Button className="mx-auto" onClick={addItem} icon={<PlusIcon />}>
         Item
       </Button>
-    </>
+    </div>
   );
 }

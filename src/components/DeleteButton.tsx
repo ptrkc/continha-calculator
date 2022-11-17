@@ -36,7 +36,7 @@ export function DeleteButton({ onClick, className }: DeleteButtonType) {
       )}
     >
       {waitingConfirmation ? (
-        'DELETAR?'
+        'APAGAR?'
       ) : (
         <span className="w-5">
           <TrashIcon />

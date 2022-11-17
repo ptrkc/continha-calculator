@@ -6,7 +6,7 @@ import { TotalSection } from '@/components/TotalSection';
 
 export function HomePage() {
   return (
-    <div className="flex flex-col gap-4 mx-auto max-w-2xl p-2">
+    <div className="flex flex-col gap-6  mx-auto max-w-2xl p-2">
       <Header />
       <PeopleSection />
       <ItemsSection />

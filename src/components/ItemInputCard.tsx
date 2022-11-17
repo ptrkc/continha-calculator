@@ -49,8 +49,8 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
         <div>
           Preço unitário: R${' '}
           <Input
-            className="w-20 text-right"
-            maxLength={11}
+            className=" w-28 text-right"
+            maxLength={8}
             inputMode="numeric"
             placeholder="0,00"
             value={item.unitPrice}
@@ -60,7 +60,7 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
             format={currencyInput.format}
           />
         </div>
-        <div>
+        <div className="flex justify-start items-center gap-2">
           <span>Quantidade: </span>
           <IntegerInput
             value={item.quantity}
