@@ -2,8 +2,8 @@ import { ReactNode } from 'react';
 import { cn } from '@/utils/classnames';
 
 type IconButtonType = React.DetailedHTMLProps<
-React.ButtonHTMLAttributes<HTMLButtonElement>,
-HTMLButtonElement
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
 > & { icon: ReactNode };
 
 export function IconButton({

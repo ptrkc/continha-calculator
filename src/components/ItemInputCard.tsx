@@ -63,6 +63,7 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
         <div className="flex justify-start items-center gap-2">
           <span>Quantidade: </span>
           <IntegerInput
+            min={1}
             value={item.quantity}
             onChange={value => changeItemProp(item, 'quantity', Number(value))}
             buttonsFunction={newValue =>

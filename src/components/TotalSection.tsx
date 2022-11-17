@@ -146,6 +146,7 @@ export function TotalSection() {
         <p className="flex justify-end items-center gap-2">
           Taxa de serviço (%):{' '}
           <IntegerInput
+            min={0}
             value={tax}
             onChange={value => setTax(Number(value))}
             buttonsFunction={setTax}
