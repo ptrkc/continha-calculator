@@ -41,15 +41,25 @@ const calculateTotalsPerPerson = (peopleIds: string[], itemsArray: Item[]) => {
     let totalCustomValue = 0;
     Object.keys(item.sharedBy).forEach(personId => {
       const sharedBy = item.sharedBy[personId];
-      if (sharedBy === true) {
-        peopleSharing.push(personId);
-      } else if (typeof sharedBy === 'number') {
-        totalsPerPerson[personId].items.push({
-          item,
-          toPay: sharedBy,
-        });
-        totalsPerPerson[personId].totalToPay += sharedBy;
-        totalCustomValue += sharedBy;
+      if (sharedBy !== false && sharedBy !== undefined) {
+        if (sharedBy.type === 'all') {
+          peopleSharing.push(personId);
+        } else if (sharedBy.type === 'price') {
+          totalsPerPerson[personId].items.push({
+            item,
+            toPay: sharedBy.value,
+          });
+          totalsPerPerson[personId].totalToPay += sharedBy.value;
+          totalCustomValue += sharedBy.value;
+        } else {
+          const priceOfThisQuantity = sharedBy.value * item.unitPrice;
+          totalsPerPerson[personId].items.push({
+            item,
+            toPay: priceOfThisQuantity,
+          });
+          totalsPerPerson[personId].totalToPay += priceOfThisQuantity;
+          totalCustomValue += priceOfThisQuantity;
+        }
       }
     });
     const sharedTotal = Math.ceil(

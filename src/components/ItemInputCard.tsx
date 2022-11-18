@@ -1,13 +1,114 @@
 import { useCallback } from 'react';
 import shallow from 'zustand/shallow';
-import { AvatarSplittingButton } from '@/components/Avatar';
+import { Avatar } from '@/components/Avatar';
 import { DeleteButton } from '@/components/DeleteButton';
 import { Input } from '@/components/Input';
 import { IntegerInput } from '@/components/IntegerInput';
-import { ItemsState, useItemsStore } from '@/hooks/useItemsStore';
+import { Item, ItemsState, useItemsStore } from '@/hooks/useItemsStore';
 import { PeopleState, usePeopleStore } from '@/hooks/usePeopleStore';
 import { currencyInput } from '@/utils/currencyInput';
 import { centsToDecimal } from '@/utils/centsToDecimal';
+import { Button } from './Button';
+
+const shareItemSelector = (state: ItemsState) => state.shareItem;
+
+function ShareOptionButtons({
+  itemId,
+  personId,
+}: {
+  itemId: string;
+  personId: string;
+}) {
+  const shareItem = useItemsStore(shareItemSelector, shallow);
+  return (
+    <>
+      <Button
+        className="text-xs leading-4"
+        onClick={() => shareItem(itemId, personId, 'all')}
+      >
+        dividir com todos
+      </Button>
+      <Button
+        className="text-xs leading-4"
+        onClick={() => shareItem(itemId, personId, 'price')}
+      >
+        pagar valor
+      </Button>
+      <Button
+        className="text-xs leading-4"
+        onClick={() => shareItem(itemId, personId, 'quantity')}
+      >
+        pagar quantidade
+      </Button>
+    </>
+  );
+}
+
+const changeItemPropSelector = (state: ItemsState) => state.changeItemProp;
+
+function ShareOptionField({
+  item,
+  personId,
+}: {
+  item: Item;
+  personId: string;
+}) {
+  const changeItemProp = useItemsStore(changeItemPropSelector, shallow);
+  console.log(personId, item);
+  if (item.sharedBy[personId].type === 'price')
+    return (
+      <div className="flex">
+        <span>Valor: </span>
+        <Input
+          type="text"
+          value={item.sharedBy[personId].value}
+          onChange={value =>
+            changeItemProp(item, 'sharedBy', {
+              ...item.sharedBy,
+              [personId]: {
+                type: item.sharedBy[personId].type,
+                value: currencyInput.toCents(value),
+              },
+            })
+          }
+          format={currencyInput.format}
+          inputMode="numeric"
+          placeholder="0,00"
+        />
+      </div>
+    );
+
+  if (item.sharedBy[personId].type === 'quantity')
+    return (
+      <div className="flex">
+        <span>Quantidade: </span>
+        <IntegerInput
+          min={1}
+          value={item.sharedBy[personId].value}
+          onChange={value =>
+            changeItemProp(item, 'sharedBy', {
+              ...item.sharedBy,
+              [personId]: {
+                type: item.sharedBy[personId].type,
+                value: Number(value),
+              },
+            })
+          }
+          buttonsFunction={value =>
+            changeItemProp(item, 'sharedBy', {
+              ...item.sharedBy,
+              [personId]: {
+                type: item.sharedBy[personId].type,
+                value,
+              },
+            })
+          }
+        />
+      </div>
+    );
+
+  return <span>Dividindo o total restante</span>;
+}
 
 const peopleSelector = (state: PeopleState) => [...state.people.values()];
 const itemFunctionsSelector = (state: ItemsState) => ({
@@ -25,7 +126,7 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
     console.log("received an itemId that doesn't exist, shouldn't happen");
     return null;
   }
-  const { changeItemProp, deleteItem, shareItem } = useItemsStore(
+  const { changeItemProp, deleteItem } = useItemsStore(
     itemFunctionsSelector,
     shallow,
   );
@@ -76,36 +177,19 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
           <span>R$ {centsToDecimal(totalPrice)}</span>
         </div>
       </div>
-      <div className="py-2 flex flex-wrap gap-y-2 justify-around">
+      <div className="py-2 flex flex-col gap-y-2 justify-around">
         {[...people.values()].map(person => (
-          <div
-            className="flex flex-col items-center gap-y-1 w-[4.6rem]"
-            key={person.id}
-          >
-            <AvatarSplittingButton
-              person={person}
-              item={item}
-              size="lg"
-              onClick={() => {
-                shareItem(item.id, person.id);
-              }}
-            />
-            {typeof item.sharedBy[person.id] === 'number' && (
-              <Input
-                className="w-full text-center px-0"
-                type="text"
-                value={item.sharedBy[person.id] as number}
-                onChange={value =>
-                  changeItemProp(item, 'sharedBy', {
-                    ...item.sharedBy,
-                    [person.id]: currencyInput.toCents(value),
-                  })
-                }
-                format={currencyInput.format}
-                inputMode="numeric"
-                placeholder="0,00"
-              />
-            )}
+          <div className="flex" key={person.id}>
+            <div>
+              <Avatar person={person} />
+            </div>
+            <div className="flex justify-around w-full">
+              {!item.sharedBy[person.id] ? (
+                <ShareOptionButtons itemId={itemId} personId={person.id} />
+              ) : (
+                <ShareOptionField item={item} personId={person.id} />
+              )}
+            </div>
           </div>
         ))}
       </div>

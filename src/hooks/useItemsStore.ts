@@ -1,12 +1,14 @@
 import create from 'zustand';
 
+type ShareType = 'all' | 'quantity' | 'price';
+
 export interface Item {
   defaultName: string;
   name: string;
   unitPrice: number;
   quantity: number;
   id: string;
-  sharedBy: Partial<Record<string, boolean | number>>;
+  sharedBy: Partial<Record<string, { type: ShareType; value: number } | false>>;
 }
 
 export interface ItemsState {
@@ -19,32 +21,34 @@ export interface ItemsState {
     propKey: string,
     newValue: string | number | object,
   ) => void;
-  shareItem: (itemId: string, personId: string) => void;
+  shareItem: (itemId: string, personId: string, shareType: ShareType) => void;
   deleteShareRelation: (personId: string) => void;
 }
 
-const _shareItem = (state: ItemsState, itemId: string, personId: string) => {
-  let newSharingValue: boolean | number = false;
+const _shareItem = (
+  state: ItemsState,
+  itemId: string,
+  personId: string,
+  shareType: ShareType,
+) => {
+  console.log(state);
+  console.log(itemId);
   const item = state.items.get(itemId);
   if (!item) {
     console.log("received an itemId that doesn't exist, shouldn't happen");
     return state;
   }
 
-  const itemShareBy = item.sharedBy[personId];
-  if (itemShareBy === undefined || itemShareBy === false) {
-    newSharingValue = true;
-  } else if (itemShareBy === true) {
-    newSharingValue = 0;
-  } else if (typeof itemShareBy === 'number') {
-    newSharingValue = false;
-  }
+  console.log(shareType);
   return {
     items: new Map(state.items).set(item.id, {
       ...item,
       sharedBy: {
         ...item.sharedBy,
-        [personId]: newSharingValue,
+        [personId]: {
+          type: shareType,
+          value: 0,
+        },
       },
     }),
   };
@@ -117,8 +121,8 @@ export const useItemsStore = create<ItemsState>(set => ({
   changeItemProp: (item, propKey, newValue) => {
     set(state => _changeItemProp(state, item, propKey, newValue));
   },
-  shareItem: (itemId, personId) =>
-    set(state => _shareItem(state, itemId, personId)),
+  shareItem: (itemId, personId, shareType) =>
+    set(state => _shareItem(state, itemId, personId, shareType)),
   deleteShareRelation: personId =>
     set(state => _deleteShareRelation(state, personId)),
 }));
