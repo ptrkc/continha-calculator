@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import shallow from 'zustand/shallow';
 import { Avatar } from '@/components/Avatar';
+import { BackButton } from '@/components/BackButton';
 import { DeleteButton } from '@/components/DeleteButton';
 import { Input } from '@/components/Input';
 import { IntegerInput } from '@/components/IntegerInput';
@@ -21,26 +22,26 @@ function ShareOptionButtons({
 }) {
   const shareItem = useItemsStore(shareItemSelector, shallow);
   return (
-    <>
+    <div className="flex w-full items-center justify-around gap-1">
       <Button
-        className="text-xs leading-4"
+        className=" leading-1 text-sm bg-white text-black border border-black"
         onClick={() => shareItem(itemId, personId, 'all')}
       >
-        dividir com todos
+        dividir total
       </Button>
       <Button
-        className="text-xs leading-4"
+        className=" leading-1 text-sm bg-white text-black border border-black"
         onClick={() => shareItem(itemId, personId, 'price')}
       >
         pagar valor
       </Button>
       <Button
-        className="text-xs leading-4"
+        className=" leading-1 text-sm bg-white text-black border border-black"
         onClick={() => shareItem(itemId, personId, 'quantity')}
       >
         pagar quantidade
       </Button>
-    </>
+    </div>
   );
 }
 
@@ -57,9 +58,10 @@ function ShareOptionField({
   console.log(personId, item);
   if (item.sharedBy[personId].type === 'price')
     return (
-      <div className="flex">
+      <div className="flex gap-2 items-center justify-start">
         <span>Valor: </span>
         <Input
+          className="w-28"
           type="text"
           value={item.sharedBy[personId].value}
           onChange={value =>
@@ -80,10 +82,11 @@ function ShareOptionField({
 
   if (item.sharedBy[personId].type === 'quantity')
     return (
-      <div className="flex">
-        <span>Quantidade: </span>
+      <div className="flex gap-2">
+        <span>Qtd.: </span>
         <IntegerInput
           min={1}
+          max={item.quantity}
           value={item.sharedBy[personId].value}
           onChange={value =>
             changeItemProp(item, 'sharedBy', {
@@ -107,7 +110,7 @@ function ShareOptionField({
       </div>
     );
 
-  return <span>Dividindo o total restante</span>;
+  return <span>Dividindo o total</span>;
 }
 
 const peopleSelector = (state: PeopleState) => [...state.people.values()];
@@ -126,7 +129,7 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
     console.log("received an itemId that doesn't exist, shouldn't happen");
     return null;
   }
-  const { changeItemProp, deleteItem } = useItemsStore(
+  const { changeItemProp, deleteItem, shareItem } = useItemsStore(
     itemFunctionsSelector,
     shallow,
   );
@@ -150,7 +153,7 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
         <div>
           Preço unitário: R${' '}
           <Input
-            className=" w-28 text-right"
+            className="w-28 text-right"
             maxLength={8}
             inputMode="numeric"
             placeholder="0,00"
@@ -162,7 +165,7 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
           />
         </div>
         <div className="flex justify-start items-center gap-2">
-          <span>Quantidade: </span>
+          <span>Qtd.: </span>
           <IntegerInput
             min={1}
             value={item.quantity}
@@ -176,18 +179,24 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
           <span>Total: </span>
           <span>R$ {centsToDecimal(totalPrice)}</span>
         </div>
+        <p>Selecione os participantes:</p>
       </div>
       <div className="py-2 flex flex-col gap-y-2 justify-around">
         {[...people.values()].map(person => (
-          <div className="flex" key={person.id}>
+          <div className="flex gap-2 items-center" key={person.id}>
             <div>
-              <Avatar person={person} />
+              <Avatar person={person} size="md" />
             </div>
-            <div className="flex justify-around w-full">
-              {!item.sharedBy[person.id] ? (
+            <div className="flex justify-between w-full">
+              {!item.sharedBy[person.id]?.type ? (
                 <ShareOptionButtons itemId={itemId} personId={person.id} />
               ) : (
-                <ShareOptionField item={item} personId={person.id} />
+                <>
+                  <ShareOptionField item={item} personId={person.id} />
+                  <BackButton
+                    onClick={() => shareItem(item.id, person.id, false)}
+                  />
+                </>
               )}
             </div>
           </div>

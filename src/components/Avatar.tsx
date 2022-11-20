@@ -1,14 +1,6 @@
 import styles from './Avatar.module.css';
-import { MouseEventHandler } from 'react';
-import { Item } from '@/hooks/useItemsStore';
 import { Person } from '@/hooks/usePeopleStore';
 import { cn } from '@/utils/classnames';
-
-const chooseVariant = (person: Person, item: Item) => {
-  if (item.sharedBy[person.id] === true) return 'solid';
-  if (typeof item.sharedBy[person.id] === 'number') return 'partial';
-  return 'outline';
-};
 
 const abbreviate = (person: Person) => {
   const nameToUse = person.name.trim() || person.defaultName;
@@ -20,65 +12,25 @@ const abbreviate = (person: Person) => {
   return nameToUse.slice(0, 2);
 };
 
-function AvatarBase({
-  person,
-  size,
-  onClick,
-  variant = 'solid',
-}: {
-  person: Person;
-  size: 'sm' | 'lg';
-  variant?: 'solid' | 'partial' | 'outline';
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-}) {
-  const abbreviation = abbreviate(person);
-
-  const DynamicTag = onClick ? 'button' : 'span';
-
-  return (
-    <DynamicTag
-      {...{ onClick }}
-      className={cn(
-        'select-none shrink-0 rounded-full w-8 h-8 flex overflow-hidden justify-center items-center border-2',
-        size === 'sm' ? 'w-8 h-8' : 'w-14 h-14',
-        styles.avatar,
-        styles[person.color],
-        styles[variant],
-      )}
-    >
-      {abbreviation}
-    </DynamicTag>
-  );
-}
-
 export function Avatar({
   person,
   size = 'sm',
 }: {
   person: Person;
-  size?: 'sm' | 'lg';
+  size?: 'sm' | 'md';
 }) {
-  return <AvatarBase person={person} size={size} variant="solid" />;
-}
+  const abbreviation = abbreviate(person);
 
-export function AvatarSplittingButton({
-  person,
-  item,
-  size = 'lg',
-  onClick,
-}: {
-  person: Person;
-  item: Item;
-  size?: 'sm' | 'lg';
-  onClick: MouseEventHandler<HTMLButtonElement>;
-}) {
-  const variant = chooseVariant(person, item);
   return (
-    <AvatarBase
-      person={person}
-      size={size}
-      onClick={onClick}
-      variant={variant}
-    />
+    <div
+      className={cn(
+        'select-none shrink-0 rounded-full w-8 h-8 flex overflow-hidden justify-center items-center border-2',
+        size === 'sm' ? 'w-8 h-8' : 'w-12 h-12',
+        styles.avatar,
+        styles[person.color],
+      )}
+    >
+      {abbreviation}
+    </div>
   );
 }
