@@ -39,29 +39,26 @@ const calculateTotalsPerPerson = (peopleIds: string[], itemsArray: Item[]) => {
     const itemTotal = item.unitPrice * item.quantity;
     const peopleSharing: string[] = [];
     let totalCustomValue = 0;
-    Object.keys(item.sharedBy).forEach(personId => {
-      const sharedBy = item.sharedBy[personId];
-      if (sharedBy !== false && sharedBy !== undefined) {
-        if (sharedBy.type === 'all') {
-          peopleSharing.push(personId);
-        } else if (sharedBy.type === 'price') {
-          totalsPerPerson[personId].items.push({
-            item,
-            toPay: sharedBy.value,
-          });
-          totalsPerPerson[personId].totalToPay += sharedBy.value;
-          totalCustomValue += sharedBy.value;
-        } else {
-          const priceOfThisQuantity = sharedBy.value * item.unitPrice;
-          totalsPerPerson[personId].items.push({
-            item,
-            toPay: priceOfThisQuantity,
-          });
-          totalsPerPerson[personId].totalToPay += priceOfThisQuantity;
-          totalCustomValue += priceOfThisQuantity;
-        }
+    for (const [personId, sharedBy] of item.sharedBy.entries()) {
+      if (sharedBy.type === 'all') {
+        peopleSharing.push(personId);
+      } else if (sharedBy.type === 'price') {
+        totalsPerPerson[personId].items.push({
+          item,
+          toPay: sharedBy.value,
+        });
+        totalsPerPerson[personId].totalToPay += sharedBy.value;
+        totalCustomValue += sharedBy.value;
+      } else {
+        const priceOfThisQuantity = sharedBy.value * item.unitPrice;
+        totalsPerPerson[personId].items.push({
+          item,
+          toPay: priceOfThisQuantity,
+        });
+        totalsPerPerson[personId].totalToPay += priceOfThisQuantity;
+        totalCustomValue += priceOfThisQuantity;
       }
-    });
+    }
     const sharedTotal = Math.ceil(
       (itemTotal - totalCustomValue) / peopleSharing.length,
     );
@@ -139,7 +136,7 @@ const calculateAmountAssigned = (
 
 export function TotalSection() {
   const [tax, setTax] = useState(10);
-  const items = useItemsStore(itemsSelector, shallow);
+  const items = useItemsStore(itemsSelector);
   const peopleIds = usePeopleStore(peopleSelector, shallow);
   const totalWithoutTax = calculateTotal(items);
   const totalWithTax = addTax(calculateTotal(items), tax);

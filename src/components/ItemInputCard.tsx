@@ -45,7 +45,7 @@ function ShareOptionButtons({
   );
 }
 
-const changeItemPropSelector = (state: ItemsState) => state.changeItemProp;
+const changeShareBySelector = (state: ItemsState) => state.changeShareBy;
 
 function ShareOptionField({
   item,
@@ -54,23 +54,20 @@ function ShareOptionField({
   item: Item;
   personId: string;
 }) {
-  const changeItemProp = useItemsStore(changeItemPropSelector, shallow);
-  console.log(personId, item);
-  if (item.sharedBy[personId].type === 'price')
+  const changeShareBy = useItemsStore(changeShareBySelector, shallow);
+  const sharedBy = item.sharedBy.get(personId);
+  if (sharedBy && sharedBy.type === 'price')
     return (
       <div className="flex gap-2 items-center justify-start">
         <span>Valor: </span>
         <Input
           className="w-28"
           type="text"
-          value={item.sharedBy[personId].value}
+          value={sharedBy.value}
           onChange={value =>
-            changeItemProp(item, 'sharedBy', {
-              ...item.sharedBy,
-              [personId]: {
-                type: item.sharedBy[personId].type,
-                value: currencyInput.toCents(value),
-              },
+            changeShareBy(personId, item.id, {
+              type: sharedBy.type,
+              value: currencyInput.toCents(value),
             })
           }
           format={currencyInput.format}
@@ -80,30 +77,24 @@ function ShareOptionField({
       </div>
     );
 
-  if (item.sharedBy[personId].type === 'quantity')
+  if (sharedBy && sharedBy.type === 'quantity')
     return (
       <div className="flex gap-2">
         <span>Qtd.: </span>
         <IntegerInput
           min={1}
           max={item.quantity}
-          value={item.sharedBy[personId].value}
+          value={sharedBy.value}
           onChange={value =>
-            changeItemProp(item, 'sharedBy', {
-              ...item.sharedBy,
-              [personId]: {
-                type: item.sharedBy[personId].type,
-                value: Number(value),
-              },
+            changeShareBy(personId, item.id, {
+              type: sharedBy.type,
+              value: Number(value),
             })
           }
           buttonsFunction={value =>
-            changeItemProp(item, 'sharedBy', {
-              ...item.sharedBy,
-              [personId]: {
-                type: item.sharedBy[personId].type,
-                value,
-              },
+            changeShareBy(personId, item.id, {
+              type: sharedBy.type,
+              value,
             })
           }
         />
@@ -117,19 +108,18 @@ const peopleSelector = (state: PeopleState) => [...state.people.values()];
 const itemFunctionsSelector = (state: ItemsState) => ({
   changeItemProp: state.changeItemProp,
   deleteItem: state.deleteItem,
-  shareItem: state.shareItem,
+  deleteShareRelation: state.deleteShareRelation,
 });
 
 export function ItemInputCard({ itemId }: { itemId: string }) {
-  const item = useItemsStore(
-    useCallback(state => state.items.get(itemId), [itemId]),
-    shallow,
+  const { item } = useItemsStore(
+    useCallback(state => ({ item: state.items.get(itemId) }), [itemId]),
   );
   if (!item) {
     console.log("received an itemId that doesn't exist, shouldn't happen");
     return null;
   }
-  const { changeItemProp, deleteItem, shareItem } = useItemsStore(
+  const { changeItemProp, deleteItem, deleteShareRelation } = useItemsStore(
     itemFunctionsSelector,
     shallow,
   );
@@ -145,7 +135,7 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
             placeholder={item.defaultName}
             value={item.name}
             onChange={value =>
-              changeItemProp(item, 'name', value.toUpperCase())
+              changeItemProp(item.id, 'name', value.toUpperCase())
             }
           />
           <DeleteButton onClick={() => deleteItem(item.id)} />
@@ -159,7 +149,7 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
             placeholder="0,00"
             value={item.unitPrice}
             onChange={value =>
-              changeItemProp(item, 'unitPrice', currencyInput.toCents(value))
+              changeItemProp(item.id, 'unitPrice', currencyInput.toCents(value))
             }
             format={currencyInput.format}
           />
@@ -169,9 +159,11 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
           <IntegerInput
             min={1}
             value={item.quantity}
-            onChange={value => changeItemProp(item, 'quantity', Number(value))}
+            onChange={value =>
+              changeItemProp(item.id, 'quantity', Number(value))
+            }
             buttonsFunction={newValue =>
-              changeItemProp(item, 'quantity', newValue)
+              changeItemProp(item.id, 'quantity', newValue)
             }
           />
         </div>
@@ -188,13 +180,13 @@ export function ItemInputCard({ itemId }: { itemId: string }) {
               <Avatar person={person} size="md" />
             </div>
             <div className="flex justify-between w-full">
-              {!item.sharedBy[person.id]?.type ? (
+              {!item.sharedBy.get(person.id) ? (
                 <ShareOptionButtons itemId={itemId} personId={person.id} />
               ) : (
                 <>
                   <ShareOptionField item={item} personId={person.id} />
                   <BackButton
-                    onClick={() => shareItem(item.id, person.id, false)}
+                    onClick={() => deleteShareRelation(person.id, item.id)}
                   />
                 </>
               )}

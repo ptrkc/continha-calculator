@@ -8,7 +8,7 @@ export interface Item {
   unitPrice: number;
   quantity: number;
   id: string;
-  sharedBy: Partial<Record<string, { type: ShareType; value: number } | false>>;
+  sharedBy: Map<string, { type: ShareType; value: number }>;
 }
 
 export interface ItemsState {
@@ -17,12 +17,17 @@ export interface ItemsState {
   deleteItem: (id: string) => void;
   addItem: () => void;
   changeItemProp: (
-    item: Item,
-    propKey: string,
+    itemId: string,
+    propKey: 'name' | 'quantity' | 'unitPrice',
     newValue: string | number | object,
   ) => void;
+  changeShareBy: (
+    personId: string,
+    itemId: string,
+    newValue: { type: ShareType; value: number },
+  ) => void;
   shareItem: (itemId: string, personId: string, shareType: ShareType) => void;
-  deleteShareRelation: (personId: string) => void;
+  deleteShareRelation: (personId: string, itemId?: string) => void;
 }
 
 const _shareItem = (
@@ -31,32 +36,29 @@ const _shareItem = (
   personId: string,
   shareType: ShareType,
 ) => {
-  console.log(state);
-  console.log(itemId);
   const item = state.items.get(itemId);
-  if (!item) {
-    console.log("received an itemId that doesn't exist, shouldn't happen");
-    return state;
-  }
+  if (!item) return state;
 
-  console.log(shareType);
-  return {
-    items: new Map(state.items).set(item.id, {
-      ...item,
-      sharedBy: {
-        ...item.sharedBy,
-        [personId]: {
-          type: shareType,
-          value: 0,
-        },
-      },
-    }),
-  };
+  item.sharedBy.set(personId, { type: shareType, value: 0 });
+  return { items: new Map(state.items).set(itemId, item) };
 };
 
-const _deleteShareRelation = (state: ItemsState, personId: string) => {
-  const items = [...state.items];
-  items.forEach(([_, item]) => (item.sharedBy[personId] = false));
+const _deleteShareRelation = (
+  state: ItemsState,
+  personId: string,
+  itemId?: string,
+) => {
+  if (itemId) {
+    const item = state.items.get(itemId);
+    if (!item) return state;
+
+    item.sharedBy.delete(personId);
+    const items = new Map(state.items).set(itemId, item);
+    return { items };
+  }
+
+  const items = new Map(state.items);
+  items.forEach(item => item.sharedBy.delete(personId));
   return { items: new Map(items) };
 };
 
@@ -75,31 +77,50 @@ const _addItem = (state: ItemsState) => {
           unitPrice: 0,
           quantity: 1,
           id,
-          sharedBy: {},
+          sharedBy: new Map<string, { type: ShareType; value: number }>(),
         },
       ],
     ]),
   };
 };
+
 const _deleteItem = (state: ItemsState, id: string) => {
   const newItems = new Map([...state.items]);
   newItems.delete(id);
-  return {
-    items: newItems,
-  };
+  return { items: newItems };
 };
 
 const _changeItemProp = (
   state: ItemsState,
-  item: Item,
-  propKey: string,
+  itemId: string,
+  propKey: 'name' | 'quantity' | 'unitPrice',
   newValue: string | number | object,
-) => ({
-  items: new Map(state.items).set(item.id, {
-    ...item,
-    [propKey]: newValue,
-  }),
-});
+) => {
+  const item = state.items.get(itemId);
+  if (!item) return state;
+
+  return {
+    items: new Map(state.items).set(item.id, {
+      ...item,
+      [propKey]: newValue,
+    }),
+  };
+};
+
+const _changeShareBy = (
+  state: ItemsState,
+  personId: string,
+  itemId: string,
+  newValue: { type: ShareType; value: number },
+) => {
+  const item = state.items.get(itemId);
+  if (!item) return state;
+
+  item.sharedBy.set(personId, newValue);
+
+  const items = new Map(state.items).set(itemId, item);
+  return { items };
+};
 
 export const useItemsStore = create<ItemsState>(set => ({
   _counter: 1,
@@ -112,17 +133,20 @@ export const useItemsStore = create<ItemsState>(set => ({
         unitPrice: 0,
         quantity: 1,
         id: 'item-1',
-        sharedBy: {},
+        sharedBy: new Map<string, { type: ShareType; value: number }>(),
       },
     ],
   ]),
   deleteItem: id => set(state => _deleteItem(state, id)),
   addItem: () => set(_addItem),
-  changeItemProp: (item, propKey, newValue) => {
-    set(state => _changeItemProp(state, item, propKey, newValue));
+  changeItemProp: (itemId, propKey, newValue) => {
+    set(state => _changeItemProp(state, itemId, propKey, newValue));
+  },
+  changeShareBy: (itemId, personId, newValue) => {
+    set(state => _changeShareBy(state, itemId, personId, newValue));
   },
   shareItem: (itemId, personId, shareType) =>
     set(state => _shareItem(state, itemId, personId, shareType)),
-  deleteShareRelation: personId =>
-    set(state => _deleteShareRelation(state, personId)),
+  deleteShareRelation: (personId, itemId) =>
+    set(state => _deleteShareRelation(state, personId, itemId)),
 }));
